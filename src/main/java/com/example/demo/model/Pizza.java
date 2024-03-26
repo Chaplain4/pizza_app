@@ -21,9 +21,11 @@ public class Pizza {
     private String name;
     @Column
     private Double price;
-    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinTable(name = "pizzas_ingredients", joinColumns = { @JoinColumn(name = "pizza_id") }, inverseJoinColumns = {
-            @JoinColumn(name = "ingredient_id") })
+    @Column
+    private Boolean menu_item;
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(name = "pizzas_ingredients", joinColumns = {@JoinColumn(name = "pizza_id")}, inverseJoinColumns = {
+            @JoinColumn(name = "ingredient_id")})
     private Set<Ingredient> ingredients;
     @ManyToMany(mappedBy = "pizzas")
     @JsonIgnore

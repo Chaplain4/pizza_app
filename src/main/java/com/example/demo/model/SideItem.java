@@ -21,6 +21,8 @@ public class SideItem {
     private String name;
     @Column
     private Double price;
+    @Column
+    private Boolean menu_item;
     @ManyToMany(mappedBy = "side_items")
     @JsonIgnore
     private Set<Order> orders;

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="ISO-8859-1">
+  <title>Restaurant add</title>
+  <style type="text/css">
+    label {
+      display: inline-block;
+      width: 200px;
+      margin: 5px;
+      text-align: left;
+    }
+    input[type=text], input[type=password], select {
+      display: inline-block;
+      width: 200px;
+    }
+    input[type=radio] {
+      margin-left: 45px;
+    }
+    input[type=checkbox] {
+      margin-right: 190px;
+    }
+    button {
+      padding: 5px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+<table>
+  <tr>
+
+<!--    @Id-->
+<!--    @GeneratedValue(strategy = GenerationType.IDENTITY)-->
+<!--    private Integer id;-->
+<!--    @Column-->
+<!--    private String open_hours;-->
+<!--    @OneToOne()-->
+<!--    @JoinColumn(name = "address_id")-->
+<!--    private Address address;-->
+<!--    @OneToMany(mappedBy = "restaurant")-->
+<!--    @Nullable-->
+<!--    private Set<Account> accounts;-->
+<!--    @OneToMany(mappedBy = "restaurant")-->
+<!--    @Nullable-->
+<!--    private Set<Order> orders;-->
+    <th>id</th>
+    <th>Open Hours</th>
+    <th>Address</th>
+  </tr>
+  <tr th:each="restaurant,iterStat : ${restaurants}" th:class="${iterStat.odd}? 'odd'">
+    <td th:text="${restaurant.id}"></td>
+    <td th:text="${restaurant.open_hours}"></td>
+    <td th:text="${restaurant.address.street} street, ${restaurant.address.building} "></td>
+    <td>
+      <form th:action="@{'/restaurants/edit/' + ${restaurant.id}}" method="post">
+        <button type="submit">Edit</button>
+      </form>
+    </td>
+  </tr>
+</table>
+<div align="center">
+  <h1>Forecast request</h1>
+
+  <form action="#" th:action="@{/restaurants/list}" method="post">
+
+    <label for="days">Days from today:</label>
+    <select id="days" name="days">
+      <option th:each="p : ${listDates}" th:value="${p}" th:text="${p}" />
+    </select>
+
+    <label for="location">Location:</label>
+    <select id="location" name="location">
+      <option th:each="p : ${listCities}" th:value="${p}" th:text="${p}" />
+    </select>
+
+    <button type="submit">Request</button>
+  </form>
+</div>
+</body>
+</html>
