@@ -44,4 +44,14 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
     }
+    @Override
+    public boolean deleteOrder(int id) {
+        try {
+            or.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

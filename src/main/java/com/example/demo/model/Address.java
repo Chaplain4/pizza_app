@@ -34,10 +34,6 @@ public class Address {
     private String door_code;
     @Column
     private String comment;
-    @OneToOne()
-    @JoinColumn(name = "restaurant_id")
-    @Nullable
-    private Restaurant restaurant;
     @ManyToMany(mappedBy = "addresses")
     @JsonIgnore
     private Set<Account> accounts;

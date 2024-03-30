@@ -9,4 +9,5 @@ public interface AddressService {
     Address getAddressById(int id);
     boolean saveOrUpdateAddress(Address address);
     boolean createAddress(Address address);
+    boolean deleteAddress(int id);
 }

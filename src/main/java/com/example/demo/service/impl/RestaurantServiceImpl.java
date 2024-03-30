@@ -44,4 +44,15 @@ public class RestaurantServiceImpl implements RestaurantService {
             return false;
         }
     }
+
+    @Override
+    public boolean deleteRestaurant(int id) {
+        try {
+            rr.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

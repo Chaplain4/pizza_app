@@ -10,4 +10,5 @@ public interface RestaurantService {
     Restaurant getRestaurantById(int id);
     boolean saveOrUpdateRestaurant(Restaurant restaurant);
     boolean createRestaurant(Restaurant restaurant);
+    boolean deleteRestaurant(int id);
 }

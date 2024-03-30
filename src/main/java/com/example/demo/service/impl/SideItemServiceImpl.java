@@ -44,4 +44,14 @@ public class SideItemServiceImpl implements SideItemService {
             return false;
         }
     }
+    @Override
+    public boolean deleteSideItem(int id) {
+        try {
+            sir.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

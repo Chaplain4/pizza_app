@@ -45,4 +45,14 @@ public class IngredientServiceImpl implements IngredientService {
             return false;
         }
     }
+    @Override
+    public boolean deleteIngredient(int id) {
+        try {
+            ir.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

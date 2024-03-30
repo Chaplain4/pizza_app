@@ -10,4 +10,5 @@ public interface PizzaService {
     Pizza getPizzaById(int id);
     boolean saveOrUpdatePizza(Pizza pizza);
     boolean createPizza(Pizza pizza);
+    boolean deletePizza(int id);
 }

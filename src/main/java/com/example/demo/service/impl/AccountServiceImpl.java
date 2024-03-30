@@ -48,4 +48,15 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
     }
+
+    @Override
+    public boolean deleteAccount(int id) {
+        try {
+            ar.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

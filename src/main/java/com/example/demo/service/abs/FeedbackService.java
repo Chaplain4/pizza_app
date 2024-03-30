@@ -10,4 +10,5 @@ public interface FeedbackService {
     Feedback getFeedbackById(int id);
     boolean saveOrUpdateFeedback(Feedback feedback);
     boolean createFeedback(Feedback feedback);
+    boolean deleteFeedback(int id);
 }

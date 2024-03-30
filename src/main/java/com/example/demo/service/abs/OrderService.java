@@ -11,4 +11,5 @@ public interface OrderService {
     Order getOrderById(int id);
     boolean saveOrUpdateOrder(Order order);
     boolean createOrder(Order order);
+    boolean deleteOrder(int id);
 }

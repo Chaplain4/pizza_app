@@ -10,4 +10,5 @@ public interface SideItemService {
     SideItem getSideItemById(int id);
     boolean saveOrUpdateSideItem(SideItem sideItem);
     boolean createSideItem(SideItem sideItem);
+    boolean deleteSideItem(int id);
 }

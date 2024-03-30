@@ -45,4 +45,14 @@ public class FeedbackServiceImpl implements FeedbackService {
             return false;
         }
     }
+    @Override
+    public boolean deleteFeedback(int id) {
+        try {
+            fr.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

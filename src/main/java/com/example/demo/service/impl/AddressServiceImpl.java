@@ -46,5 +46,14 @@ public class AddressServiceImpl implements AddressService {
         }
     }
 
-
+    @Override
+    public boolean deleteAddress(int id) {
+        try {
+            ar.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

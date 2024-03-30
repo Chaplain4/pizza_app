@@ -1,0 +1,56 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Form</title>
+    <link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+
+<div align="center">
+    <h2>Edit Restaurant</h2>
+    <form th:action="@{/restaurants/edit}" th:method="post" th:object="${restaurant}" >
+        <input type="hidden" th:field="*{id}"/>
+        <input type="hidden" th:field="*{address.id}"/>
+        <label for="openHours">Open Hours:</label>
+        <input type="text" id="openHours" th:field="*{open_hours}"/><br/>
+
+
+        <h3>Address Information</h3>
+        <label for="street">Street:</label>
+        <input type="text" id="street" th:field="*{address.street}"/><br/>
+
+
+        <label for="building">Building:</label>
+        <input type="text" id="building" th:field="*{address.building}"/><br/>
+
+
+        <label for="entrance">Entrance:</label>
+        <input type="number" id="entrance" th:field="*{address.entrance}"/><br/>
+
+
+        <label for="floor">Floor:</label>
+        <input type="number" id="floor" th:field="*{address.floor}"/><br/>
+
+
+        <label for="apartment">Apartment:</label>
+        <input type="number" id="apartment" th:field="*{address.apartment}"/><br/>
+
+
+        <label for="hasIntercom">Has Intercom:</label>
+        <input type="checkbox" id="hasIntercom" th:field="*{address.has_intercom}"/><br/>
+
+
+        <label for="doorCode">Door Code:</label>
+        <input type="text" id="doorCode" th:field="*{address.door_code}"/><br/>
+
+
+        <label for="comment">Comment:</label>
+        <input type="text" id="comment" th:field="*{address.comment}"/><br/>
+
+        <button type="submit">Edit</button>
+    </form>
+
+</div>
+</body>
+</html>

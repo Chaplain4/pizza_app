@@ -9,4 +9,5 @@ public interface AccountService {
     Account getAccountById(int id);
     boolean saveOrUpdateAccount(Account account);
     boolean createAccount(Account account);
+    boolean deleteAccount(int id);
 }

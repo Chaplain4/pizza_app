@@ -9,4 +9,5 @@ public interface RoleService {
     Role getRoleById(int id);
     boolean saveOrUpdateRole(Role role);
     boolean createRole(Role role);
+    boolean deleteRole(int id);
 }

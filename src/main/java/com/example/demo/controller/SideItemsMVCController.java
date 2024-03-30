@@ -1,10 +1,7 @@
 package com.example.demo.controller;
 
-
-import com.example.demo.model.Address;
-import com.example.demo.model.Restaurant;
-import com.example.demo.service.abs.AddressService;
-import com.example.demo.service.abs.RestaurantService;
+import com.example.demo.model.SideItem;
+import com.example.demo.service.abs.SideItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,33 +10,28 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/restaurants")
-public class RestaurantsMVCController {
+@RequestMapping("/sideitems")
+public class SideItemsMVCController {
     Logger logger = LoggerFactory.getLogger(RestaurantsMVCController.class);
 
     @Autowired
-    private RestaurantService rs;
-
-    @Autowired
-    private AddressService as;
+    private SideItemService sis;
 
     @GetMapping("/list")
     public String showForm(Model model) {
         logger.info("showForm started");
-        model.addAttribute("restaurants", rs.getAllRestaurants());
-        model.addAttribute("address", new Address());
-        model.addAttribute("restaurant", new Restaurant());
-        logger.info("restaurants added");
-        return "restaurant_form";
+        model.addAttribute("sideitems", sis.getAllSideItems());
+        model.addAttribute("sideitem", new SideItem());
+        logger.info("side items added");
+        return "sideitem_form";
     }
 
-    @PostMapping("/create_restaurant")
-    public String submitForm(@ModelAttribute("restaurant") Restaurant restaurant) {
+    @PostMapping("/create_sideitem")
+    public String submitForm(@ModelAttribute("sideitem") SideItem sideItem) {
         System.out.println("begin posting");
         try {
-            System.out.println(restaurant);
-            as.createAddress(restaurant.getAddress());
-            rs.createRestaurant(restaurant);
+            System.out.println(sideItem);
+            sis.createSideItem(sideItem);
             return "request_success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,7 +43,7 @@ public class RestaurantsMVCController {
     public String remove(@PathVariable(name = "id") Integer id) {
         System.out.println("begin posting");
         try {
-            rs.deleteRestaurant(id);
+            sis.deleteSideItem(id);
             return "request_success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,18 +54,17 @@ public class RestaurantsMVCController {
     @GetMapping("/edit/{id}")
     public String showEditForm(Model model, @PathVariable(name = "id") Integer id) {
         logger.info("showForm started");
-        model.addAttribute("restaurant", rs.getRestaurantById(id));
-        logger.info("restaurant added");
-        return "restaurant_editform";
+        model.addAttribute("sideitem", sis.getSideItemById(id));
+        logger.info("side item added");
+        return "sideitem_editform";
     }
 
     @PostMapping("/edit")
-    public String submitEditForm(@ModelAttribute("restaurant") Restaurant restaurant) {
+    public String submitEditForm(@ModelAttribute("sideitem") SideItem sideItem) {
         System.out.println("begin editing");
         try {
-            System.out.println(restaurant);
-            as.saveOrUpdateAddress(restaurant.getAddress());
-            rs.saveOrUpdateRestaurant(restaurant);
+            System.out.println(sideItem);
+            sis.saveOrUpdateSideItem(sideItem);
             return "request_success";
         } catch (Exception e) {
             e.printStackTrace();

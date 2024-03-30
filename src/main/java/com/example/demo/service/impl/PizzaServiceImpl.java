@@ -44,4 +44,14 @@ public class PizzaServiceImpl implements PizzaService {
             return false;
         }
     }
+    @Override
+    public boolean deletePizza(int id) {
+        try {
+            pr.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

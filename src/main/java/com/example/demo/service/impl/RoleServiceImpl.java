@@ -44,4 +44,14 @@ public class RoleServiceImpl implements RoleService {
             return false;
         }
     }
+    @Override
+    public boolean deleteRole(int id) {
+        try {
+            rr.deleteById(id);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
 }

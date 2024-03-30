@@ -1,81 +1,104 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-  <meta charset="ISO-8859-1">
-  <title>Restaurant add</title>
-  <style type="text/css">
-    label {
-      display: inline-block;
-      width: 200px;
-      margin: 5px;
-      text-align: left;
-    }
-    input[type=text], input[type=password], select {
-      display: inline-block;
-      width: 200px;
-    }
-    input[type=radio] {
-      margin-left: 45px;
-    }
-    input[type=checkbox] {
-      margin-right: 190px;
-    }
-    button {
-      padding: 5px;
-      margin: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Form</title>
+    <link rel="stylesheet" type="text/css" href="/css/pizza.css">
 </head>
 <body>
 <table>
-  <tr>
-
-<!--    @Id-->
-<!--    @GeneratedValue(strategy = GenerationType.IDENTITY)-->
-<!--    private Integer id;-->
-<!--    @Column-->
-<!--    private String open_hours;-->
-<!--    @OneToOne()-->
-<!--    @JoinColumn(name = "address_id")-->
-<!--    private Address address;-->
-<!--    @OneToMany(mappedBy = "restaurant")-->
-<!--    @Nullable-->
-<!--    private Set<Account> accounts;-->
-<!--    @OneToMany(mappedBy = "restaurant")-->
-<!--    @Nullable-->
-<!--    private Set<Order> orders;-->
-    <th>id</th>
-    <th>Open Hours</th>
-    <th>Address</th>
-  </tr>
-  <tr th:each="restaurant,iterStat : ${restaurants}" th:class="${iterStat.odd}? 'odd'">
-    <td th:text="${restaurant.id}"></td>
-    <td th:text="${restaurant.open_hours}"></td>
-    <td th:text="${restaurant.address.street} street, ${restaurant.address.building} "></td>
-    <td>
-      <form th:action="@{'/restaurants/edit/' + ${restaurant.id}}" method="post">
-        <button type="submit">Edit</button>
-      </form>
-    </td>
-  </tr>
+    <tr>
+        <th>id</th>
+        <th>Open Hours</th>
+        <th>Address</th>
+    </tr>
+    <tr th:each="restaurant,iterStat : ${restaurants}" th:class="${iterStat.odd}? 'odd' : 'even'">
+        <td th:text="${restaurant.id}"></td>
+        <td th:text="${restaurant.open_hours}"></td>
+        <td th:text="${restaurant.address.street + ' street, ' + restaurant.address.building}"></td>
+        <td>
+            <form th:action="@{'/restaurants/edit/' + ${restaurant.id}}" th:method="get">
+                <button type="submit">Edit</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{'/restaurants/delete/' + ${restaurant.id}}" th:method="get">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
 </table>
+<form action="http://localhost:8088/accounts/list">
+    <input type="submit" value="Go to accounts CRUD" />
+</form>
+<form action="http://localhost:8088/addresses/list">
+    <input type="submit" value="Go to addresses CRUD" />
+</form>
+<form action="http://localhost:8088/feedbacks/list">
+    <input type="submit" value="Go to feedbacks CRUD" />
+</form>
+<form action="http://localhost:8088/ingridients/list">
+    <input type="submit" value="Go to ingridients CRUD" />
+</form>
+<form action="http://localhost:8088/orders/list">
+    <input type="submit" value="Go to orders CRUD" />
+</form>
+<form action="http://localhost:8088/pizzas/list">
+    <input type="submit" value="Go to pizzas CRUD" />
+</form>
+<form action="http://localhost:8088/restaurants/list">
+    <input type="submit" value="Go to restaurants CRUD" />
+</form>
+<form action="http://localhost:8088/roles/list">
+    <input type="submit" value="Go to restaurants CRUD" />
+</form>
+<form action="http://localhost:8088/sideitems/list">
+    <input type="submit" value="Go to side items CRUD" />
+</form>
+
+
 <div align="center">
-  <h1>Forecast request</h1>
+    <h2>Create Restaurant</h2>
+    <form th:action="@{/restaurants/create_restaurant}" th:method="post" th:object="${restaurant}" >
+        <label for="openHours">Open Hours:</label>
+        <input type="text" id="openHours" th:field="*{open_hours}"/><br/>
 
-  <form action="#" th:action="@{/restaurants/list}" method="post">
 
-    <label for="days">Days from today:</label>
-    <select id="days" name="days">
-      <option th:each="p : ${listDates}" th:value="${p}" th:text="${p}" />
-    </select>
+        <h3>Address Information</h3>
+        <label for="street">Street:</label>
+        <input type="text" id="street" th:field="*{address.street}"/><br/>
 
-    <label for="location">Location:</label>
-    <select id="location" name="location">
-      <option th:each="p : ${listCities}" th:value="${p}" th:text="${p}" />
-    </select>
 
-    <button type="submit">Request</button>
-  </form>
+        <label for="building">Building:</label>
+        <input type="text" id="building" th:field="*{address.building}"/><br/>
+
+
+        <label for="entrance">Entrance:</label>
+        <input type="number" id="entrance" th:field="*{address.entrance}"/><br/>
+
+
+        <label for="floor">Floor:</label>
+        <input type="number" id="floor" th:field="*{address.floor}"/><br/>
+
+
+        <label for="apartment">Apartment:</label>
+        <input type="number" id="apartment" th:field="*{address.apartment}"/><br/>
+
+
+        <label for="hasIntercom">Has Intercom:</label>
+        <input type="checkbox" id="hasIntercom" th:field="*{address.has_intercom}"/><br/>
+
+
+        <label for="doorCode">Door Code:</label>
+        <input type="text" id="doorCode" th:field="*{address.door_code}"/><br/>
+
+
+        <label for="comment">Comment:</label>
+        <input type="text" id="comment" th:field="*{address.comment}"/><br/>
+
+        <button type="submit">Create</button>
+    </form>
+
 </div>
 </body>
 </html>
