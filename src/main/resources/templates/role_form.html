@@ -1,0 +1,46 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Form</title>
+    <link rel="stylesheet" type="text/css" href="/css/pizza.css">
+</head>
+<body>
+<table>
+    <tr>
+        <th>id</th>
+        <th>Name</th>
+
+    </tr>
+    <tr th:each="role,iterStat : ${roles}" th:class="${iterStat.odd}? 'odd' : 'even'">
+        <td th:text="${role.id}"></td>
+        <td th:text="${role.name}"></td>
+        <td>
+            <form th:action="@{'/roles/edit/' + ${role.id}}" th:method="get">
+                <button type="submit">Edit</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{'/roles/delete/' + ${role.id}}" th:method="get">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<form action="http://localhost:8088/">
+    <input type="submit" value="Back to menu" />
+</form>
+
+<div align="center">
+    <h2>Create Role</h2>
+    <form th:action="@{/roles/create_role}" th:method="post" th:object="${role}" >
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" th:field="*{name}"/><br/>
+
+        <button type="submit">Create</button>
+    </form>
+
+</div>
+</body>
+</html>

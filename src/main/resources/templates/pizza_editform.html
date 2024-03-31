@@ -1,10 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Form</title>
+    <link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
+<form action="http://localhost:8088/">
+    <input type="submit" value="Back to menu"/>
+</form>
+<div align="center">
+    <h2>Edit Pizza</h2>
+    <form th:action="@{/pizzas/edit}" th:method="post" th:object="${pizza}">
+        <input type="hidden" th:field="*{id}"/>
+        <label for="name">Name:</label>
+        <input type="text" id="name" th:field="*{name}"/>
+        <br/>
+        <label for="size">Size:</label>
+        <select id="size" th:field="*{pizza_size}">
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+        </select>
+        <br/>
+        <label for="price">Price:</label>
+        <input type="text" id="price" th:field="*{price}"/>
+        <br/>
+        <label for="menuItem">Menu Item:</label>
+        <input type="checkbox" id="menuItem" th:field="*{menu_item}"/>
+        <br/>
+        <label for="ingredient">Ingredients:</label>
+        <select id="ingredient" multiple="multiple" th:field="*{ingredients}">
+            <option th:each="ingredient : ${allIngredients}"
+                    th:if="${ingredient.pizza_size == 'S'}"
+                    th:value="${ingredient.id}" th:text="${ingredient.name} + '  ' + ${ingredient.pizza_size}">Select
+                Ingredients
+            </option>
+        </select>
+        <br/>
 
+        <button type="submit">Edit</button>
+    </form>
+
+</div>
 </body>
 </html>

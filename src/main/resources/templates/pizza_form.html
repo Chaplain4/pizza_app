@@ -25,7 +25,10 @@
         <td th:text="${pizza.pizza_size}"></td>
         <td th:text="${pizza.price}"></td>
         <td th:text="${pizza.menu_item} ? 'Yes' : 'No'"></td>
-        <td th:text="${pizza.ingredients}"></td>
+        <td th:each="ingredient : ${allIngredients}"
+            th:if="${ingredient.pizzas != null and !#lists.isEmpty(ingredient.pizzas) and #lists.contains(ingredient.pizzas, pizza)}">
+            <span th:text="${ingredient.name + ' ' + ingredient.pizza_size}"></span>
+        </td>
         <td>
             <form th:action="@{'/pizzas/edit/' + ${pizza.id}}" th:method="get">
                 <button type="submit">Edit</button>
@@ -69,16 +72,10 @@
         <select id="ingredient" multiple="multiple" th:field="*{ingredients}">
             <option th:each="ingredient : ${allIngredients}"
                     th:if="${ingredient.pizza_size == 'S'}"
-                    th:value="${ingredient.id}" th:text="${ingredient.name} + '  ' + ${ingredient.pizza_size}">Select
+                    th:value="${ingredient.id}" th:text="${ingredient.name}">Select
                 Ingredients
             </option>
         </select>
-
-        <!--        <select id="ingredient" multiple="multiple" th:field="*{ingredients}">-->
-        <!--            <option th:each="ingredient : ${ingredients}"-->
-        <!--                    th:if="${ingredient.pizza_size == *{pizza_size}}"-->
-        <!--                    th:value="${ingredient}" th:text="${ingredient.name}">Select Ingredients</option>-->
-        <!--        </select>-->
         <br/>
 
         <button type="submit">Create</button>

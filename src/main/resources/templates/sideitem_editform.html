@@ -1,0 +1,33 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingredient Form</title>
+    <link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<form action="http://localhost:8088/">
+    <input type="submit" value="Back to menu"/>
+</form>
+
+<div align="center">
+    <h2>Edit Side Item</h2>
+    <form th:action="@{/sideitems/edit}" th:method="post" th:object="${sideitem}">
+        <input type="hidden" th:field="*{id}"/>
+        <br/>
+        <label for="name">Name:</label>
+        <input type="text" id="name" th:field="*{name}"/><br/>
+        <br/>
+        <label for="price">Price:</label>
+        <input type="number" step="0.01" id="price" th:field="*{price}"/><br/>
+
+        <br/>
+        <label for="menuItem">Menu Item:</label>
+        <input type="checkbox" id="menuItem" th:field="*{menu_item}"/>
+        <br/>
+
+        <button type="submit">Edit</button>
+    </form>
+</div>
+</body>
+</html>

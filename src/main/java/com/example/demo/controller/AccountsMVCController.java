@@ -32,6 +32,7 @@ public class AccountsMVCController {
         logger.info("showForm started");
         model.addAttribute("account", new Account());
         model.addAttribute("restaurants", rs.getAllRestaurants());
+        model.addAttribute("addresses", as.getAllAddresses());
         model.addAttribute("address", new Address());
         model.addAttribute("roles", ros.getAllRoles());
         logger.info("restaurants added");

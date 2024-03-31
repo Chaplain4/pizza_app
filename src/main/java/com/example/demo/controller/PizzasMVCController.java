@@ -28,21 +28,6 @@ public class PizzasMVCController {
     @GetMapping("/list")
     public String showForm(Model model) {
         logger.info("showForm started");
-//        Set<Pizza> p = new HashSet<>(ps.getAllPizzas());
-//        List<Ingredient> i = new ArrayList<>(is.getAllIngredients());
-//        i.forEach(ingredient -> {
-//            Set<Integer> ids = new HashSet<>();
-//            p.forEach(pizza -> {
-//                ingredient.getPizzas().forEach(pizza1 -> {
-//                    if (pizza1.getId().equals(pizza.getId())) {
-//                        Set<Ingredient> i1 =pizza.getIngredients();
-//                        i1.add(ingredient);
-//                        pizza.setIngredients(i1);
-//                    }
-//                });
-//            });
-//        });
-
         model.addAttribute("pizzas", ps.getAllPizzas());
         model.addAttribute("allIngredients", is.getAllIngredients());
         model.addAttribute("pizza", new Pizza());
@@ -56,19 +41,18 @@ public class PizzasMVCController {
         System.out.println(pizza);
         try {
             List<Ingredient> all = is.getAllIngredients();
-            List<Ingredient> pizzaIngredients = new ArrayList<>(pizza.getIngredients());
-            pizzaIngredients.forEach(ingredient -> {
-                if (!Objects.equals(ingredient.getPizza_size(), pizza.getPizza_size())) {
-                    all.forEach(ingredient1 -> {
-                        if (ingredient1.getPizza_size().equals(pizza.getPizza_size()) && ingredient1.getName().equals(ingredient.getName())) {
-                            pizzaIngredients.remove(ingredient);
-                            pizzaIngredients.add(ingredient1);
-                        }
-                    });
-                    pizza.setIngredients(new HashSet<>(pizzaIngredients));
+            Set<Ingredient> pizzaIngredients = new HashSet<>();
+            Set<Ingredient> counter = new HashSet<>(pizza.getIngredients());
+            List<String> names = new ArrayList<>();
+            counter.forEach(ingredient -> {
+                names.add(ingredient.getName());
+            });
+            all.forEach(ingredient -> {
+                if (Objects.equals(ingredient.getPizza_size(), pizza.getPizza_size()) && names.contains(ingredient.getName())) {
+                    pizzaIngredients.add(ingredient);
                 }
             });
-            System.out.println(pizza);
+            pizza.setIngredients(pizzaIngredients);
             ps.createPizza(pizza);
             return "request_success";
         } catch (Exception e) {
@@ -92,7 +76,8 @@ public class PizzasMVCController {
     @GetMapping("/edit/{id}")
     public String showEditForm(Model model, @PathVariable(name = "id") Integer id) {
         logger.info("showForm started");
-        model.addAttribute("restaurant", ps.getPizzaById(id));
+        model.addAttribute("pizza", ps.getPizzaById(id));
+        model.addAttribute("allIngredients", is.getAllIngredients());
         logger.info("pizza added");
         return "pizza_editform";
     }
@@ -101,7 +86,22 @@ public class PizzasMVCController {
     public String submitEditForm(@ModelAttribute("pizza") Pizza pizza) {
         System.out.println("begin editing");
         try {
-            System.out.println(pizza);
+            List<Ingredient> all = is.getAllIngredients();
+            List<Ingredient> pizzaIngredients = new ArrayList<>();
+            Set<Ingredient> counter = new HashSet<>(pizza.getIngredients());
+            List<String> names = new ArrayList<>();
+            counter.forEach(ingredient -> {
+                names.add(ingredient.getName());
+            });
+            all.forEach(ingredient -> {
+                if (Objects.equals(ingredient.getPizza_size(), pizza.getPizza_size()) && names.contains(ingredient.getName())) {
+                    pizzaIngredients.add(ingredient);
+                }
+            });
+            pizzaIngredients.forEach(ingredient1 -> {
+                ingredient1.setPizzas(null);
+            });
+            pizza.setIngredients(new HashSet<>(pizzaIngredients));
             ps.saveOrUpdatePizza(pizza);
             return "request_success";
         } catch (Exception e) {
