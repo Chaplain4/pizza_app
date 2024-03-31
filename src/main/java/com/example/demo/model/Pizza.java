@@ -20,6 +20,8 @@ public class Pizza {
     @Column
     private String name;
     @Column
+    private String pizza_size;
+    @Column
     private Double price;
     @Column
     private Boolean menu_item;

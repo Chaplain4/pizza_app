@@ -1,0 +1,82 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Form</title>
+    <link rel="stylesheet" type="text/css" href="/css/pizza.css">
+</head>
+<body>
+<table>
+
+    <tr>
+        <th>id</th>
+        <th>Street</th>
+        <th>Building</th>
+        <th>Entrance</th>
+        <th>Floor</th>
+        <th>Apartment</th>
+        <th>Has intercom?</th>
+        <th>Door code</th>
+        <th>Comment</th>
+    </tr>
+    <tr th:each="address,iterStat : ${addresses}" th:class="${iterStat.odd}? 'odd' : 'even'">
+        <td th:text="${address.id}"></td>
+        <td th:text="${address.street}"></td>
+        <td th:text="${address.building}"></td>
+        <td th:text="${address.entrance}"></td>
+        <td th:text="${address.floor}"></td>
+        <td th:text="${address.apartment}"></td>
+        <td th:text="${address.has_intercom}"></td>
+        <td th:text="${address.door_code}"></td>
+        <td th:text="${address.comment}"></td>
+        <td>
+            <form th:action="@{'/addresses/edit/' + ${address.id}}" th:method="get">
+                <button type="submit">Edit</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{'/addresses/delete/' + ${address.id}}" th:method="get">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<form action="http://localhost:8088/">
+    <input type="submit" value="Back to menu" />
+</form>
+
+
+<div align="center">
+    <h2>Create Address</h2>
+    <form th:action="@{/addresses/create_address}" th:method="post" th:object="${address}" >
+
+        <label for="street">Street:</label>
+        <input type="text" id="street" th:field="*{street}"/><br/>
+
+        <label for="building">Building:</label>
+        <input type="text" id="building" th:field="*{building}"/><br/>
+
+        <label for="entrance">Entrance:</label>
+        <input type="number" id="entrance" th:field="*{entrance}"/><br/>
+
+        <label for="floor">Floor:</label>
+        <input type="number" id="floor" th:field="*{floor}"/><br/>
+
+        <label for="apartment">Apartment:</label>
+        <input type="number" id="apartment" th:field="*{apartment}"/><br/>
+
+        <label for="hasIntercom">Has Intercom:</label>
+        <input type="checkbox" id="hasIntercom" th:field="*{has_intercom}"/><br/>
+
+        <label for="doorCode">Door Code:</label>
+        <input type="text" id="doorCode" th:field="*{door_code}"/><br/>
+
+        <label for="comment">Comment:</label>
+        <input type="text" id="comment" th:field="*{comment}"/><br/>
+
+        <button type="submit">Create</button>
+    </form>
+
+</div>
+</body>
+</html>

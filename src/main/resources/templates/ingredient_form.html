@@ -1,0 +1,56 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingredient Form</title>
+    <link rel="stylesheet" type="text/css" href="/css/pizza.css">
+</head>
+<body>
+<table>
+
+    <tr>
+        <th>id</th>
+        <th>Name</th>
+        <th>Pizza Size</th>
+        <th>Price</th>
+    </tr>
+    <tr th:each="ingredient,iterStat : ${ingredients}" th:class="${iterStat.odd}? 'odd' : 'even'">
+        <td th:text="${ingredient.id}"></td>
+        <td th:text="${ingredient.name}"></td>
+        <td th:text="${ingredient.pizza_size}"></td>
+        <td th:text="${ingredient.price}"></td>
+        <td>
+            <form th:action="@{'/ingredients/edit/' + ${ingredient.id}}" th:method="get">
+                <button type="submit">Edit</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{'/ingredients/delete/' + ${ingredient.id}}" th:method="get">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<form action="http://localhost:8088/">
+    <input type="submit" value="Back to menu" />
+</form>
+
+<div align="center">
+    <h2>Create Ingredient</h2>
+    <form th:action="@{/ingredients/create_ingredient}" th:method="post" th:object="${ingredient}" >
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" th:field="*{name}"/><br/>
+
+        <label for="pizza_size">Pizza Size:</label>
+        <input type="text" id="pizza_size" th:field="*{pizza_size}"/><br/>
+
+        <label for="price">Price:</label>
+        <input type="number" step="0.01" id="price" th:field="*{price}"/><br/>
+
+        <button type="submit">Create</button>
+    </form>
+
+</div>
+</body>
+</html>

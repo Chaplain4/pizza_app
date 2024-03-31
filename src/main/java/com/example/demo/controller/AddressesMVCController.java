@@ -54,8 +54,8 @@ public class AddressesMVCController {
     public String showEditForm(Model model, @PathVariable(name = "id") Integer id) {
         logger.info("showForm started");
         model.addAttribute("address", as.getAddressById(id));
-        logger.info("restaurant added");
-        return "restaurant_editform";
+        logger.info("address added");
+        return "address_editform";
     }
 
     @PostMapping("/edit")

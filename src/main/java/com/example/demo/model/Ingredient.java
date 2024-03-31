@@ -20,6 +20,8 @@ public class Ingredient {
     @Column
     private String name;
     @Column
+    private String pizza_size;
+    @Column
     private Double price;
     @ManyToMany(mappedBy = "ingredients")
     @JsonIgnore

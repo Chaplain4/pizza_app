@@ -6,7 +6,9 @@
     <link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 <body>
-
+<form action="http://localhost:8088/">
+    <input type="submit" value="Back to menu" />
+</form>
 <div align="center">
     <h2>Edit Restaurant</h2>
     <form th:action="@{/restaurants/edit}" th:method="post" th:object="${restaurant}" >

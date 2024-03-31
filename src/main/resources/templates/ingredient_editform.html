@@ -1,0 +1,30 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingredient Form</title>
+    <link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<form action="http://localhost:8088/">
+    <input type="submit" value="Back to menu" />
+</form>
+<div align="center">
+    <h2>Edit Ingredient</h2>
+    <form th:action="@{/ingredients/edit}" th:method="post" th:object="${ingredient}" >
+        <input type="hidden" th:field="*{id}"/>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" th:field="*{name}"/><br/>
+
+        <label for="pizza_size">Pizza Size:</label>
+        <input type="text" id="pizza_size" th:field="*{pizza_size}"/><br/>
+
+        <label for="price">Price:</label>
+        <input type="number" step="0.01" id="price" th:field="*{price}"/><br/>
+
+        <button type="submit">Edit</button>
+    </form>
+</div>
+</body>
+</html>
