@@ -23,11 +23,11 @@
 <!--@Column-->
 <!--private Integer bonus_coins;-->
 <!--@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })-->
-<!--@JoinTable(name = "accounts_roles", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {-->
+<!--@JoinTable(name = "users_roles", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {-->
 <!--@JoinColumn(name = "role_id") })-->
 <!--private Set<Role> roles;-->
 <!--    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })-->
-<!--    @JoinTable(name = "accounts_addresses", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {-->
+<!--    @JoinTable(name = "users_addresses", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {-->
 <!--    @JoinColumn(name = "address_id") })-->
 <!--    private Set<Address> addresses;-->
 <!--        @ManyToOne()-->
@@ -50,36 +50,36 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="account : ${accounts}">
-        <td th:text="${account.id}"></td>
-        <td th:text="${account.name}"></td>
-        <td th:text="${account.email}"></td>
-        <td th:text="${account.pwd}"></td>
-        <td th:text="${account.phone}"></td>
-        <td th:text="${account.isActivated} ? 'Yes' : 'No'"></td>
-        <td th:text="${account.bonus_coins}"></td>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.pwd}"></td>
+        <td th:text="${user.phone}"></td>
+        <td th:text="${user.isActivated} ? 'Yes' : 'No'"></td>
+        <td th:text="${user.bonus_coins}"></td>
         <td>
-            <span th:each="role : ${roles}" th:if="${role.accounts != null}">
-    <span th:each="account1 : ${role.accounts}" th:if="${account1.id == account.id}"
+            <span th:each="role : ${roles}" th:if="${role.users != null}">
+    <span th:each="user1 : ${role.users}" th:if="${user1.id == user.id}"
           th:text="${role.name}">></span>
 </span>
             </span>
         </td>
         <td>
-            <span th:each="address : ${addresses}" th:if="${address.accounts != null}">
-    <span th:each="account1 : ${address.accounts}" th:if="${account1.id == account.id}"
+            <span th:each="address : ${addresses}" th:if="${address.users != null}">
+    <span th:each="user1 : ${address.users}" th:if="${user1.id == user.id}"
           th:text="${address.street  + ' street, ' + address.building}">></span>
 </span>
             </span>
         </td>
-        <td th:text="${account.restaurant.address.street  + ' street, ' + account.restaurant.address.building}"></td>
+        <td th:text="${user.restaurant.address.street  + ' street, ' + user.restaurant.address.building}"></td>
         <td>
-            <form th:action="@{'/accounts/edit/' + ${account.id}}" th:method="get">
+            <form th:action="@{'/users/edit/' + ${user.id}}" th:method="get">
                 <button type="submit">Edit</button>
             </form>
         </td>
         <td>
-            <form th:action="@{'/accounts/delete/' + ${account.id}}" th:method="get">
+            <form th:action="@{'/users/delete/' + ${user.id}}" th:method="get">
                 <button type="submit">Delete</button>
             </form>
         </td>
@@ -93,8 +93,8 @@
 
 
 <div align="center">
-    <h2>Create Account</h2>
-    <form th:action="@{/accounts/create_account}" th:method="post" th:object="${account}">
+    <h2>Create user</h2>
+    <form th:action="@{/users/create_user}" th:method="post" th:object="${user}">
 
 <!--        <label for="name">Name:</label>-->
 <!--        <input type="text" id="name" th:field="*{name}"/>-->

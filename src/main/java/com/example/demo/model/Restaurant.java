@@ -24,7 +24,7 @@ public class Restaurant {
     private Address address;
     @OneToMany(mappedBy = "restaurant")
     @Nullable
-    private Set<Account> accounts;
+    private Set<User> users;
     @OneToMany(mappedBy = "restaurant")
     @Nullable
     private Set<Order> orders;

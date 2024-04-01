@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Account;
+import com.example.demo.model.User;
 import com.example.demo.model.Address;
 import com.example.demo.service.abs.*;
 import org.slf4j.Logger;
@@ -11,13 +11,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/accounts")
-public class AccountsMVCController {
+@RequestMapping("/users")
+public class UsersMVCController {
 
     Logger logger = LoggerFactory.getLogger(RestaurantsMVCController.class);
 
     @Autowired
-    private AccountService acs;
+    private UserService acs;
     @Autowired
     private RestaurantService rs;
 
@@ -30,24 +30,24 @@ public class AccountsMVCController {
     @GetMapping("/list")
     public String showForm(Model model) {
         logger.info("showForm started");
-        model.addAttribute("account", new Account());
+        model.addAttribute("user", new User());
         model.addAttribute("restaurants", rs.getAllRestaurants());
         model.addAttribute("addresses", as.getAllAddresses());
         model.addAttribute("address", new Address());
         model.addAttribute("roles", ros.getAllRoles());
         logger.info("restaurants added");
-        return "account_form";
+        return "user_form";
     }
 
-    @PostMapping("/create_account")
-    public String submitForm(@ModelAttribute("account") Account account) {
+    @PostMapping("/create_user")
+    public String submitForm(@ModelAttribute("user") User user) {
         System.out.println("begin posting");
         try {
-            System.out.println(account);
-            account.getAddresses().forEach(address -> {
+            System.out.println(user);
+            user.getAddresses().forEach(address -> {
                 as.createAddress(address);
             });
-            acs.createAccount(account);
+            acs.createUser(user);
             return "request_success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class AccountsMVCController {
     public String remove(@PathVariable(name = "id") Integer id) {
         System.out.println("begin posting");
         try {
-            acs.deleteAccount(id);
+            acs.deleteUser(id);
             return "request_success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,20 +70,20 @@ public class AccountsMVCController {
     @GetMapping("/edit/{id}")
     public String showEditForm(Model model, @PathVariable(name = "id") Integer id) {
         logger.info("showForm started");
-        model.addAttribute("account", acs.getAccountById(id));
-        logger.info("account added");
-        return "account_editform";
+        model.addAttribute("user", acs.getUserById(id));
+        logger.info("user added");
+        return "user_editform";
     }
 
     @PostMapping("/edit")
-    public String submitEditForm(@ModelAttribute("account") Account account) {
+    public String submitEditForm(@ModelAttribute("user") User user) {
         System.out.println("begin editing");
         try {
-            System.out.println(account);
-            account.getAddresses().forEach(address -> {
+            System.out.println(user);
+            user.getAddresses().forEach(address -> {
                 as.saveOrUpdateAddress(address);
             });
-            acs.saveOrUpdateAccount(account);
+            acs.saveOrUpdateUser(user);
             return "request_success";
         } catch (Exception e) {
             e.printStackTrace();

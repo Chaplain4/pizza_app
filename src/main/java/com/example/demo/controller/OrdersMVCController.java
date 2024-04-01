@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Account;
-import com.example.demo.model.Address;
 import com.example.demo.model.Order;
 import com.example.demo.model.Pizza;
 import com.example.demo.service.abs.*;
@@ -24,7 +22,7 @@ public class OrdersMVCController {
     private OrderService os;
 
     @Autowired
-    private AccountService acs;
+    private UserService acs;
 
     @Autowired
     private PizzaService ps;
@@ -40,7 +38,7 @@ public class OrdersMVCController {
         model.addAttribute("order", new Order());
         model.addAttribute("orders", os.getAllOrders());
         model.addAttribute("addresses", as.getAllAddresses());
-        model.addAttribute("accounts", acs.getAllAccounts());
+        model.addAttribute("users", acs.getAllUsers());
         model.addAttribute("sideitems", sis.getAllSideItems());
         List<Pizza> pizzas = ps.getAllPizzas();
         pizzas.forEach(pizza -> {
@@ -82,7 +80,7 @@ public class OrdersMVCController {
     public String showEditForm(Model model, @PathVariable(name = "id") Integer id) {
         logger.info("showForm started");
         model.addAttribute("order", os.getOrderById(id));
-        logger.info("account added");
+        logger.info("user added");
         return "order_editform";
     }
 

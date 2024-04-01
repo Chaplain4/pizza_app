@@ -19,9 +19,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne()
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "user_id")
     @Nullable
-    private Account account;
+    private User user;
     @ManyToOne()
     @JoinColumn(name = "restaurant_id")
     @Nullable

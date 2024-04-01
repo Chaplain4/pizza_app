@@ -36,7 +36,7 @@ public class Address {
     private String comment;
     @ManyToMany(mappedBy = "addresses")
     @JsonIgnore
-    private Set<Account> accounts;
+    private Set<User> users;
     @OneToMany(mappedBy = "address")
     @Nullable
     private Set<Order> orders;

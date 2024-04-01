@@ -21,5 +21,5 @@ public class Role {
     private String name;
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
-    private Set<Account> accounts;
+    private Set<User> users;
 }
