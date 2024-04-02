@@ -17,18 +17,20 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     @Autowired
     private UserRepository ar;
-
     @Autowired
     private RoleRepository rr;
-
     private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository,
+                           RoleRepository roleRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.ar = userRepository;
+        this.rr = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
 
     private Role checkRoleExist() {
         Role role = new Role();
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(registrationDto.getEmail());
         user.setName(registrationDto.getName());
         user.setPhone(registrationDto.getPhone());
-        user.setPwd(passwordEncoder.encode(registrationDto.getPwd()));
+        user.setPassword(passwordEncoder.encode(registrationDto.getPwd()));
         return ar.save(user);
     }
 
@@ -94,10 +96,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByEmail(String email) {
         return ar.findByEmail(email);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
     }
 }
