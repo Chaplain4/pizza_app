@@ -55,4 +55,9 @@ public class IngredientServiceImpl implements IngredientService {
             return false;
         }
     }
+
+    @Override
+    public List<Ingredient> findIngredientsByPizzasId(Integer pizzas_id) {
+        return ir.findIngredientsByPizzasId(pizzas_id);
+    }
 }

@@ -1,5 +1,6 @@
-package com.example.demo.model;
+package com.example.demo.dto;
 
+import com.example.demo.model.Pizza;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,22 +12,10 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "ingredients")
-public class Ingredient {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class IngredientDTO {
     private Integer id;
-    @Column
     private String name;
-    @Column
     private String pizza_size;
-    @Column
     private Double price;
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {
-                    CascadeType.ALL
-            }, mappedBy = "ingredients")
-    @JsonIgnore
     private Set<Pizza> pizzas;
 }

@@ -33,7 +33,7 @@ public class User {
     @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {
             @JoinColumn(name = "role_id")})
     private Set<Role> roles;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinTable(name = "users_addresses", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {
             @JoinColumn(name = "address_id")})
     private Set<Address> addresses;

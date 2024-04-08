@@ -34,7 +34,8 @@ public class Address {
     private String door_code;
     @Column
     private String comment;
-    @ManyToMany(mappedBy = "addresses")
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.MERGE, CascadeType.PERSIST }, mappedBy = "addresses")
     @JsonIgnore
     private Set<User> users;
     @OneToMany(mappedBy = "address")

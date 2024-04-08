@@ -25,9 +25,8 @@
         <td th:text="${pizza.pizza_size}"></td>
         <td th:text="${pizza.price}"></td>
         <td th:text="${pizza.menu_item} ? 'Yes' : 'No'"></td>
-        <td th:each="ingredient : ${allIngredients}"
-            th:if="${ingredient.pizzas != null and !#lists.isEmpty(ingredient.pizzas) and #lists.contains(ingredient.pizzas, pizza)}">
-            <span th:text="${ingredient.name + ' ' + ingredient.pizza_size}"></span>
+        <td th:each="ingredient : ${pizza.ingredients}">
+            <span th:text="${ingredient.name} + '  ' + ${ingredient.pizza_size}"></span>
         </td>
         <td>
             <form th:action="@{'/pizzas/edit/' + ${pizza.id}}" th:method="get">

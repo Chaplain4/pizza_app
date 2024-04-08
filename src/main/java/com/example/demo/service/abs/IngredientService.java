@@ -11,4 +11,5 @@ public interface IngredientService {
     boolean saveOrUpdateIngredient(Ingredient ingredient);
     boolean createIngredient(Ingredient ingredient);
     boolean deleteIngredient(int id);
+    List<Ingredient> findIngredientsByPizzasId(Integer pizzas_id);
 }

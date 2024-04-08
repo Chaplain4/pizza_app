@@ -26,7 +26,7 @@ public class Order {
     @JoinColumn(name = "restaurant_id")
     @Nullable
     private Restaurant restaurant;
-    @Column(columnDefinition = "boolean default false")
+    @Column()
     private Boolean to_deliver;
     @ManyToOne()
     @JoinColumn(name = "address_id")

@@ -54,4 +54,9 @@ public class SideItemServiceImpl implements SideItemService {
             return false;
         }
     }
+
+    @Override
+    public List<SideItem> findSideItemsByOrdersId(Integer orders_id) {
+        return sir.findSideItemsByOrdersId(orders_id);
+    }
 }
