@@ -26,21 +26,23 @@
     </thead>
     <tbody>
     <tr th:each="order : ${orders}">
-        <td th:text="${order.id}"></td>
-        <td th:text="${order.user.name}"></td>
-        <td th:text="${order.restaurant.id}"></td>
+        <td th:text="${order.id} ? ${order.id} : ''"></td>
+        <td th:text="${order.user != null} ? ${order.user.name} : ''"></td>
+        <td th:text="${order.restaurant != null} ? ${order.restaurant.id} : ''"></td>
         <td th:text="${order.to_deliver} ? 'Yes' : 'No'"></td>
-        <td th:text="${order.address.street} + ',' + ${order.address.building}+ '-' +${order.address.apartment}"></td>
+        <td th:text="${order.address != null} ? ${order.address.street + ', ' + order.address.building + '-' + order.address.apartment} : ''"></td>
         <td th:text="${order.created}"></td>
         <td th:text="${order.confirmed}"></td>
         <td th:text="${order.assembled}"></td>
         <td th:text="${order.delivered}"></td>
         <td th:text="${order.comment}"></td>
-        <td th:each="pizza : ${order.pizzas}">
-            <span th:text="${pizza.name} + ',' +  ${pizza.pizza_size}"></span>
+        <td>
+            <span th:each="pizza : ${pizzasForOrders[__${order.id}__]}"
+                  th:text="${pizza.name + ', ' + pizza.pizza_size}"></span>
         </td>
-        <td th:each="side_item : ${order.side_items}">
-            <span th:text="${side_item.name}"></span>
+        <td>
+            <span th:each="item : ${sideItemsForOrders[__${order.id}__]}" th:text="${item.name}"></span>
+        </td>
         </td>
         <td>
             <form th:action="@{'/orders/edit/' + ${order.id}}" th:method="get">
@@ -157,8 +159,7 @@
             <th th:if="${newOrder.restaurant != null}">Restaurant</th>
             <th th:if="${newOrder.to_deliver != null}">To deliver?</th>
             <th th:if="${newOrder.address != null}">Address</th>
-            <th>Pizzas</th>
-            <th>Side Items</th>
+            <th>Items</th>
         </tr>
         </thead>
         <tbody>
@@ -168,11 +169,7 @@
             <td th:text="${newOrder.to_deliver} ? 'Yes' : 'No'" th:if="${newOrder.to_deliver != null}"></td>
             <td th:text="${newOrder.address.street} + ',' + ${newOrder.address.building}+ '-' +${newOrder.address.apartment}"
                 th:if="${newOrder.address != null}"></td>
-            <td th:each="pizza : ${newOrder.pizzas}">
-                <span th:text="${pizza.name} + ',' +  ${pizza.pizza_size}"></span>
-            </td>
-            <td th:each="side_item : ${newOrder.side_items}">
-                <span th:text="${side_item.name}"></span>
+            <td th:text="${currentItems}">
             </td>
         </tr>
         </tbody>
@@ -197,8 +194,28 @@
                 <span th:text="${ingredient.name} + '  ' + ${ingredient.pizza_size}"></span>
             </td>
             <td>
-                <form th:action="@{'/orders/add_item/pizza/'  + ${pizza.id}}" th:method="post">
+                <form th:action="@{'/orders/add_item/pizza/'  + ${pizza.id}}" th:method="post" th:object="${newOrder}">
+                    <input type="hidden" th:field="*{user}"/>
+                    <input type="hidden" th:field="*{to_deliver}"/>
+                    <input type="hidden" th:field="*{restaurant}"/>
+                    <input type="hidden" th:field="*{address}"/>
+                    <input type="hidden" th:field="*{pizzas}"/>
+                    <input type="hidden" th:field="*{side_items}"/>
+                    <input type="hidden" name="orderMap" th:value="${orderMap}"/>
                     <button type="submit">Add</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{'/orders/remove_item/pizza/'  + ${pizza.id}}" th:method="post"
+                      th:object="${newOrder}">
+                    <input type="hidden" th:field="*{user}"/>
+                    <input type="hidden" th:field="*{to_deliver}"/>
+                    <input type="hidden" th:field="*{restaurant}"/>
+                    <input type="hidden" th:field="*{address}"/>
+                    <input type="hidden" th:field="*{pizzas}"/>
+                    <input type="hidden" th:field="*{side_items}"/>
+                    <input type="hidden" name="orderMap" th:value="${orderMap}"/>
+                    <button type="submit">Remove</button>
                 </form>
             </td>
         </tr>
@@ -217,21 +234,44 @@
             <td th:text="${sideItem.name}"></td>
             <td th:text="${sideItem.price}"></td>
             <td>
-                <form th:action="@{'/orders/add_item/sideItem/' + ${sideItem.id}}" th:method="post">
+                <form th:action="@{'/orders/add_item/sideItem/' + ${sideItem.id}}" th:method="post"
+                      th:object="${newOrder}">
+                    <input type="hidden" th:field="*{user}"/>
+                    <input type="hidden" th:field="*{to_deliver}"/>
+                    <input type="hidden" th:field="*{restaurant}"/>
+                    <input type="hidden" th:field="*{address}"/>
+                    <input type="hidden" th:field="*{pizzas}"/>
+                    <input type="hidden" th:field="*{side_items}"/>
+                    <input type="hidden" name="orderMap" th:value="${orderMap}"/>
                     <button type="submit">Add</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{'/orders/remove_item/sideItem/' + ${sideItem.id}}" th:method="post"
+                      th:object="${newOrder}">
+                    <input type="hidden" th:field="*{user}"/>
+                    <input type="hidden" th:field="*{to_deliver}"/>
+                    <input type="hidden" th:field="*{restaurant}"/>
+                    <input type="hidden" th:field="*{address}"/>
+                    <input type="hidden" th:field="*{pizzas}"/>
+                    <input type="hidden" th:field="*{side_items}"/>
+                    <input type="hidden" name="orderMap" th:value="${orderMap}"/>
+                    <button type="submit">Remove</button>
                 </form>
             </td>
         </tr>
         </tbody>
+        </tbody>
     </table>
     <div>
         <form th:action="@{/orders/create_order_3}" th:method="post" th:object="${newOrder}">
-            <input type="hidden" th:field="*{user}" th:if="${user != null}"/>
+            <input type="hidden" th:field="*{user}"/>
             <input type="hidden" th:field="*{to_deliver}"/>
-            <input type="hidden" th:field="*{restaurant}" th:if="${restaurant != null}"/>
-            <input type="hidden" th:field="*{address}" th:if="${address != null}"/>
-            <input type="hidden" th:field="*{pizzas}" th:if="${pizzas != null}"/>
-            <input type="hidden" th:field="*{side_items}" th:if="${side_items != null}"/>
+            <input type="hidden" th:field="*{restaurant}"/>
+            <input type="hidden" th:field="*{address}"/>
+            <input type="hidden" th:field="*{pizzas}"/>
+            <input type="hidden" th:field="*{side_items}"/>
+            <input type="hidden" name="orderMap" th:value="${orderMap}"/>
             <button type="submit">Confirm Order</button>
         </form>
     </div>

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 @Data
 @NoArgsConstructor
@@ -34,7 +35,7 @@ public class OrderDTO {
 
     private String comment;
 
-    private Set<Pizza> pizzas;
+    private List<Pizza> pizzas;
 
     private Set<SideItem> side_items;
 
