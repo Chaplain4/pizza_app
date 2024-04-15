@@ -83,7 +83,7 @@ CREATE TABLE `addresses` (
 -- Dumping data for table `addresses`
 --
 
-INSERT INTO `addresses` (`id`, `apartment`, `building`, `comment`, `door_code`, `entrance`, `floor`, `has_intercom`, `street`, `restaurant_id`) VALUES
+INSERT INTO `addresses` (`id`, `apartment`, `building`, `comment`, `door_code`, `entrance`, `floor`, `has_intercom`, `street`, `restaurant`) VALUES
 (1, NULL, '21', NULL, NULL, 1, 1, b'1', 'K. Marksa', 1),
 (2, NULL, '4', '', '', 7, 5, b'0', 'Мележа', NULL),
 (3, 107, '22', '', '', 3, 7, b'1', 'Лукьяновича', NULL);
@@ -198,7 +198,7 @@ CREATE TABLE `pizzas` (
 --
 
 INSERT INTO `pizzas` (`id`, `name`, `price`, `menu_item`, `pizza_size`) VALUES
-(25, 'Margherita', 25.5, b'0', 'S');
+(25, 'Margherita', 25.5, '1', 'S');
 
 -- --------------------------------------------------------
 

@@ -117,6 +117,19 @@ public class OrdersMVCController {
 
     @PostMapping("/create_order_1")
     public String submitForm1(@ModelAttribute("newOrder") Order order, Model model) {
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order1.getId());
+            pizzasForOrders.put(order1.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order1.getId());
+            sideItemsForOrders.put(order1.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
         System.out.println("begin posting");
         if (order.getTo_deliver() == null) {
             order.setTo_deliver(false);
@@ -143,6 +156,19 @@ public class OrdersMVCController {
 
     @PostMapping("/create_order_2")
     public String submitForm2(@ModelAttribute("newOrder") Order order, @ModelAttribute("newAddress") Address address, Model model) {
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order1.getId());
+            pizzasForOrders.put(order1.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order1.getId());
+            sideItemsForOrders.put(order1.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
         System.out.println("begin posting");
         if (order.getTo_deliver() && order.getAddress() == null) {
             order.setAddress(address);
@@ -190,6 +216,19 @@ public class OrdersMVCController {
     @PostMapping("/add_item/{pizzaOrSideItem}/{id}")
     public String addItem(@ModelAttribute("newOrder") Order order, @ModelAttribute("orderMap") String orderMap, Model model,
                           @PathVariable String pizzaOrSideItem, @PathVariable String id) {
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order1.getId());
+            pizzasForOrders.put(order1.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order1.getId());
+            sideItemsForOrders.put(order1.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
         String newStr = "";
         String subStrToFind = pizzaOrSideItem + id;
         int startIndex = orderMap.indexOf(subStrToFind);
@@ -259,6 +298,19 @@ public class OrdersMVCController {
     @PostMapping("/remove_item/{pizzaOrSideItem}/{id}")
     public String removeItem(@ModelAttribute("newOrder") Order order, @ModelAttribute("orderMap") String orderMap, Model model,
                              @PathVariable String pizzaOrSideItem, @PathVariable String id) {
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order1.getId());
+            pizzasForOrders.put(order1.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order1.getId());
+            sideItemsForOrders.put(order1.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
         String newStr = "";
         String subStrToFind = pizzaOrSideItem + id;
         int startIndex = orderMap.indexOf(subStrToFind);
