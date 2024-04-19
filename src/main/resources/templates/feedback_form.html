@@ -2,9 +2,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Role Form</title>
+    <title>Pizza Form</title>
     <link rel="stylesheet" type="text/css" href="/css/pizza.css">
 </head>
+
 <body>
 <header>
     <form action="http://localhost:8088/accounts/list">
@@ -36,40 +37,38 @@
     </form>
 </header>
 <table>
-    <tr>
-        <th>id</th>
-        <th>Name</th>
+<thead>
+<h2 style="background: #f2f2f2">My orders</h2>
+<tr>
+    <th>Restaurant</th>
+    <th>To deliver?</th>
+    <th>Address</th>
+    <th>Delivered</th>
+    <th>Pizzas</th>
+    <th>Side Items</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="order : ${orders}">
 
-    </tr>
-    <tr th:each="role,iterStat : ${roles}" th:class="${iterStat.odd}? 'odd' : 'even'">
-        <td th:text="${role.id}"></td>
-        <td th:text="${role.name}"></td>
-        <td>
-            <form th:action="@{'/roles/edit/' + ${role.id}}" th:method="get">
-                <button type="submit">Edit</button>
-            </form>
-        </td>
-        <td>
-            <form th:action="@{'/roles/delete/' + ${role.id}}" th:method="get">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
+    <td th:text="${order.restaurant != null} ? ${order.restaurant.id} : ''"></td>
+    <td th:text="${order.to_deliver} ? 'Yes' : 'No'"></td>
+    <td th:text="${order.address != null} ? ${order.address.street + ', ' + order.address.building + '-' + order.address.apartment} : ''"></td>
+    <td th:text="${order.delivered}"></td>
+    <td>
+            <span th:each="pizza : ${pizzasForOrders[__${order.id}__]}"
+                  th:text="${pizza.name + ', ' + pizza.pizza_size}"></span>
+    </td>
+    <td>
+        <span th:each="item : ${sideItemsForOrders[__${order.id}__]}" th:text="${item.name}"></span>
+    </td>
+    <td>
+        <form th:action="@{'/feedbacks/add/' + ${order.id}}" th:method="get">
+            <button type="submit">Write feedback</button>
+        </form>
+    </td>
+</tr>
+</tbody>
 </table>
-<form action="http://localhost:8088/">
-    <input type="submit" value="Back to menu" />
-</form>
-
-<div align="center">
-    <h2>Create Role</h2>
-    <form th:action="@{/roles/create_role}" th:method="post" th:object="${role}" >
-
-        <label for="name">Name:</label>
-        <input type="text" id="name" th:field="*{name}"/><br/>
-
-        <button type="submit">Create</button>
-    </form>
-
-</div>
 </body>
 </html>

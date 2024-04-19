@@ -5,8 +5,38 @@
     <title>Pizza Form</title>
     <link rel="stylesheet" type="text/css" href="/css/pizza.css">
 </head>
+
 <body>
 <body>
+<header>
+    <form action="http://localhost:8088/accounts/list">
+        <input type="submit" value="Go to accounts CRUD"/>
+    </form>
+    <form action="http://localhost:8088/addresses/list">
+        <input type="submit" value="Go to addresses CRUD"/>
+    </form>
+    <form action="http://localhost:8088/feedbacks/list">
+        <input type="submit" value="Go to feedbacks CRUD"/>
+    </form>
+    <form action="http://localhost:8088/ingredients/list">
+        <input type="submit" value="Go to ingredients CRUD"/>
+    </form>
+    <form action="http://localhost:8088/orders/list">
+        <input type="submit" value="Go to orders CRUD"/>
+    </form>
+    <form action="http://localhost:8088/pizzas/list">
+        <input type="submit" value="Go to pizzas CRUD"/>
+    </form>
+    <form action="http://localhost:8088/restaurants/list">
+        <input type="submit" value="Go to restaurants CRUD"/>
+    </form>
+    <form action="http://localhost:8088/roles/list">
+        <input type="submit" value="Go to roles CRUD"/>
+    </form>
+    <form action="http://localhost:8088/sideitems/list">
+        <input type="submit" value="Go to side items CRUD"/>
+    </form>
+</header>
 <table>
     <thead>
     <tr>
@@ -25,8 +55,11 @@
         <td th:text="${pizza.pizza_size}"></td>
         <td th:text="${pizza.price}"></td>
         <td th:text="${pizza.menu_item} ? 'Yes' : 'No'"></td>
-        <td th:each="ingredient : ${pizza.ingredients}">
-            <span th:text="${ingredient.name} + '  ' + ${ingredient.pizza_size}"></span>
+        <td width="10%">
+            <span th:each="ingredient, status : ${pizza.ingredients}"
+                  th:text="${ingredient.name} + ' ' + ${ingredient.pizza_size} + ' '">
+            </span>
+            <br>
         </td>
         <td>
             <form th:action="@{'/pizzas/edit/' + ${pizza.id}}" th:method="get">
@@ -42,15 +75,10 @@
     </tbody>
 </table>
 </body>
-<form action="http://localhost:8088/">
-    <input type="submit" value="Back to menu"/>
-</form>
-
-
+</br>
 <div align="center">
-    <h2>Create Pizza</h2>
-    <form th:action="@{/pizzas/create_pizza}" th:method="post" th:object="${pizza}">
-
+    <form th:action="@{/pizzas/create_pizza}" th:method="post" th:object="${pizza}" style="width: 10%">
+        <h2>Create Pizza</h2>
         <label for="name">Name:</label>
         <input type="text" id="name" th:field="*{name}"/>
         <br/>

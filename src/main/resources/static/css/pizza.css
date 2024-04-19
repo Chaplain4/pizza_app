@@ -1,0 +1,141 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ff7f50;
+    margin: 0;
+    padding: 0;
+    background-image: url("../img/PZPattern.png");
+}
+
+.header {
+    background-color: #BF0A30;
+    color: #FFF;
+    text-align: center;
+    padding: 10px;
+}
+
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.menu-item {
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+    background-color: #FFF;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.menu-item h3 {
+    margin: 10px 0;
+}
+
+.menu-item p {
+    color: #888;
+    margin-bottom: 20px;
+}
+
+.order-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    color: #FFF;
+    background-color: #BF0A30;
+    text-decoration: none;
+    border: none;
+}
+
+table {
+    width: 70%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: #f2f2f2;
+    color: #333;
+    font-family: Arial, sans-serif;
+    align-self: center;
+}
+
+
+th {
+    background-color: #666;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 500px;
+    height: 200px;
+    background: url("../img/pizzaStar.png") repeat-x;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 50px;
+    height: 50px;
+    background: url("../img/pointer.png") no-repeat;
+    cursor: pointer;
+
+}
+
+
+td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+    word-wrap: break-word;
+}
+
+form {
+    width: min-content;
+    margin: 0 auto;
+    background-color: #f2f2f2;
+    color: #333;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+input[type="text"], input[type="email"], input[type="password"], select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type="submit"], button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+header form {
+    display: inline;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #f2f2f2;
+    color: #333;
+    font-family: Arial, sans-serif;
+    padding: 5px;
+    white-space: nowrap;
+}
+
+header {
+    display: flex;
+}
+
+h2 {
+    text-align: center;
+}

@@ -36,6 +36,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/register/**").permitAll()
                                 .requestMatchers("/**").permitAll()
+                                .requestMatchers("/img/**").permitAll()
+                                .requestMatchers("/png/**").permitAll()
+                                .requestMatchers("/css/**").permitAll()
+                                .requestMatchers("/js/**").permitAll()
                                 .requestMatchers("/users").hasRole("ADMIN")
                                 .requestMatchers("/students").hasAnyRole("ADMIN", "NICE_GUY")
                 ).formLogin(

@@ -10,6 +10,7 @@ import com.example.demo.service.abs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +68,8 @@ public class OrdersMVCController {
 
     @GetMapping("/list")
     public String showForm(Model model) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
         logger.info("showForm started");
         model.addAttribute("newOrder", new Order());
         model.addAttribute("orders", os.getAllOrders());
@@ -405,6 +408,11 @@ public class OrdersMVCController {
             int value = Integer.parseInt(pairs[i + 1]);
             map.put(key, value);
         }
+        if (order.getUser() == null) {
+            User user = new User();
+            user.setName("Stranger");
+            order.setUser(user);
+        }
         List<Pizza> currentPizzas = new ArrayList<>();
         List<SideItem> currentItems = new ArrayList<>();
         for (String key : map.keySet()) {
@@ -440,6 +448,11 @@ public class OrdersMVCController {
                 List<SideItem> all = sis.getAllSideItems();
                 List<PizzaDTO> all1 = ps.getAllPizzas();
                 OrderDTO finalCurrentOrder = currentOrder;
+                if (finalCurrentOrder.getUser() == null) {
+                    User user = new User();
+                    user.setName("Stranger");
+                    finalCurrentOrder.setUser(user);
+                }
                 all.forEach(sideItem -> {
                     if (sideItem.getName().startsWith(finalCurrentOrder.getUser().getName()) && os.findOrdersBySide_itemsId(sideItem.getId()).isEmpty()) {
                         os.addSideItemToOrder(finalCurrentOrder.getId(), sideItem.getId());
