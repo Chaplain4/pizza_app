@@ -3,6 +3,7 @@ package com.example.demo.service.abs;
 
 import com.example.demo.dto.PizzaDTO;
 import com.example.demo.model.Pizza;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface PizzaService {
     void mapDtoToEntity(PizzaDTO pizzaDTO, Pizza pizza);
 
     PizzaDTO mapEntityToDto(Pizza pizza);
+    void addIngredientToPizza(Integer pizzaId, Integer ingredientId);
+    void clearIngredients(Integer pizzaId);
 }

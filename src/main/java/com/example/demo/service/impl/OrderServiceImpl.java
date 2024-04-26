@@ -126,7 +126,7 @@ public class OrderServiceImpl implements OrderService {
         order.setConfirmed(orderDTO.getConfirmed());
         order.setCreated(orderDTO.getCreated());
         order.setDelivered(orderDTO.getDelivered());
-        order.setFeedback(orderDTO.getFeedback());
+//        order.setFeedback(orderDTO.getFeedback());
         order.setPizzas(new HashSet<>(orderDTO.getPizzas()));
         order.setSide_items(orderDTO.getSide_items());
         order.setTo_deliver(orderDTO.getTo_deliver());
@@ -148,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
         responseDTO.setConfirmed(order.getConfirmed());
         responseDTO.setCreated(order.getCreated());
         responseDTO.setDelivered(order.getDelivered());
-        responseDTO.setFeedback(order.getFeedback());
+//        responseDTO.setFeedback(order.getFeedback());
         responseDTO.setTo_deliver(order.getTo_deliver());
         if (order.getUser() != null) {
             responseDTO.setUser(order.getUser());
@@ -169,7 +169,7 @@ public class OrderServiceImpl implements OrderService {
         responseDTO.setConfirmed(order.getConfirmed());
         responseDTO.setCreated(order.getCreated());
         responseDTO.setDelivered(order.getDelivered());
-        responseDTO.setFeedback(order.getFeedback());
+//        responseDTO.setFeedback(order.getFeedback());
         responseDTO.setTo_deliver(order.getTo_deliver());
         return responseDTO;
     }

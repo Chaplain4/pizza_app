@@ -64,9 +64,9 @@
 </form>
 
 <div align="center">
-    <h2>Create Side Item</h2>
-    <form th:action="@{/sideitems/create_sideitem}" th:method="post" th:object="${sideitem}" >
 
+    <form th:action="@{/sideitems/create_sideitem}" th:method="post" th:object="${sideitem}" >
+        <h2>Create Side Item</h2>
         <label for="name">Name:</label>
         <input type="text" id="name" th:field="*{name}"/><br/>
 

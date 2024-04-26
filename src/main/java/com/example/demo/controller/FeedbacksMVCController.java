@@ -111,9 +111,9 @@ public class FeedbacksMVCController {
 
             System.out.println(feedback);
             fs.createFeedback(feedback);
-            Order order = os.getOrderById(feedback.getOrder().getId());
-            order.setFeedback(feedback);
-            os.saveOrUpdateOrder(order.getId(),os.mapEntityToDto(order));
+//            Order order = os.getOrderById(feedback.getOrder().getId());
+//            order.setFeedback(feedback);
+//            os.saveOrUpdateOrder(order.getId(),os.mapEntityToDto(order));
             return "request_success";
         } catch (Exception e) {
             e.printStackTrace();

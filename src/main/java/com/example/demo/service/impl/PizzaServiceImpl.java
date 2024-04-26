@@ -154,6 +154,16 @@ public class PizzaServiceImpl implements PizzaService {
         return responseDto;
     }
 
+    @Override
+    public void addIngredientToPizza(Integer pizzaId, Integer ingredientId) {
+        pr.addIngredient(pizzaId, ingredientId);
+    }
+
+    @Override
+    public void clearIngredients(Integer pizzaId) {
+        pr.clearIngredients(pizzaId);
+    }
+
     private PizzaDTO mapEntityToDTOWithoutMTMFields(Pizza pizza) {
         PizzaDTO pizzaDTO = new PizzaDTO();
         pizzaDTO.setId(pizza.getId());

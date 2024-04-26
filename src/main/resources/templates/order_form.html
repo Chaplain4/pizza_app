@@ -97,15 +97,15 @@
 <!-- User assignment -->
 
 <div th:if="${stage == 1}" align="center">
-    <form th:action="@{/orders/create_order_1}" th:method="post" th:object="${newOrder}">
+    <form th:action="@{/orders/create_order_1}" th:method="post" th:object="${newOrder}" style="width: 200px">
         <h2>Create Order</h2>
-        User:
-        <select id="userSelection" th:field="*{user}">
-            <option th:each="user : ${users}" th:if="${user.isActivated}" th:value="${user.id}" th:text="${user.name}">
-            <option value="0">Inactive user</option>
-        </select>
+        <!--&lt;!&ndash;        User:&ndash;&gt;-->
+        <!--        <select type="hidden" id="userSelection" th:field="*{user}">-->
+        <!--            <option th:each="user : ${users}" th:if="${user.isActivated}" th:value="${user.id}" th:text="${user.name}">-->
+        <!--            <option value="0">Inactive user</option>-->
+        <!--        </select>-->
         <br>
-        <label for="toDeliver">to_deliver:</label>
+        <label for="toDeliver">To deliver?</label>
         <input type="checkbox" id="toDeliver" name="to_deliver"
                th:checked="${newOrder.to_deliver != null && newOrder.to_deliver}"/><br/>
         <button type="submit">Next</button>
@@ -114,7 +114,7 @@
 
 <!-- Delivery assignment -->
 <div th:if="${stage == 2}" align="center">
-    <form th:action="@{/orders/create_order_2}" th:method="post" th:object="${newOrder}">
+    <form th:action="@{/orders/create_order_2}" th:method="post" th:object="${newOrder}" style="width: 200px">
         <input type="hidden" th:field="*{user}"/>
         <input type="hidden" th:field="*{to_deliver}"/>
         <div th:if="${newOrder.to_deliver} == true">
@@ -126,7 +126,7 @@
                 <option value="0">New Address</option>
             </select>
 
-            <div th:object="${newAddress}">
+            <div th:object="${newAddress}" style="width: 200px">
                 <br>
                 New Address:
                 <br>
@@ -162,7 +162,7 @@
                 <input type="text" id="comment" th:field="*{comment}"/><br/>
             </div>
         </div>
-        <div th:if="${newOrder.to_deliver} == false">
+        <div th:if="${newOrder.to_deliver} == false" style="width: 200px">
             Select restaurant:
             <br>
             <input type="hidden" th:field="*{user}"/>
@@ -181,15 +181,17 @@
 
 <div th:if="${stage == 3}" align="center">
 
-    Current order:
+
     <table>
         <thead>
+        <h3 style="width: 200px; background-color: #f2f2f2"> Current order:</h3>
         <tr>
             <th th:if="${newOrder.user != null}">User</th>
             <th th:if="${newOrder.restaurant != null}">Restaurant</th>
             <th th:if="${newOrder.to_deliver != null}">To deliver?</th>
             <th th:if="${newOrder.address != null}">Address</th>
             <th>Items</th>
+            <th>Custom Pizzas</th>
         </tr>
         </thead>
         <tbody>
@@ -200,15 +202,19 @@
             <td th:text="${newOrder.address.street} + ',' + ${newOrder.address.building}+ '-' +${newOrder.address.apartment}"
                 th:if="${newOrder.address != null}"></td>
             <td th:text="${currentItems}">
+            <td th:text="${customPizzas}">
             </td>
         </tr>
         </tbody>
     </table>
-    MENU:
+
 
     <table>
         <thead>
+        <h3 style="width: 200px; background-color: #f2f2f2"> MENU:</h3>
+        <h3 style="width: 200px; background-color: #f2f2f2"> PIZZAS:</h3>
         <tr>
+            <th>Picture</th>
             <th>Name</th>
             <th>Size</th>
             <th>Price</th>
@@ -217,11 +223,19 @@
         </thead>
         <tbody>
         <tr th:each="pizza : ${Allpizzas}">
+            <td><img th:src="@{${'/img/' + pizza.name + '.png'}}" width="120"/></td>
             <td th:text="${pizza.name}"></td>
             <td th:text="${pizza.pizza_size}"></td>
             <td th:text="${pizza.price}"></td>
-            <td th:each="ingredient : ${pizza.ingredients}">
-                <span th:text="${ingredient.name} + '  ' + ${ingredient.pizza_size}"></span>
+            <td>
+                   <span th:each="ingredient,iterStat : ${pizza.ingredients}"
+                         th:text="${ingredient.name} + '  ' + ${ingredient.pizza_size}"
+                         th:if="${iterStat.index == 0}" th:remove="tag">
+    </span>
+                <span th:each="ingredient,iterStat : ${pizza.ingredients}"
+                      th:text="', ' + ${ingredient.name} + '  ' + ${ingredient.pizza_size}"
+                      th:if="${iterStat.index != 0}" th:remove="tag">
+    </span>
             </td>
             <td>
                 <form th:action="@{'/orders/add_item/pizza/'  + ${pizza.id}}" th:method="post" th:object="${newOrder}">
@@ -251,16 +265,19 @@
         </tr>
         </tbody>
     </table>
-    Side Items:
+    <h3 style="width: 200px; background-color: #f2f2f2;">SIDE ITEMS:</h3>
+
     <table>
         <thead>
         <tr>
+            <th>Picture</th>
             <th>Name</th>
             <th>Price</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="sideItem : ${sideitems}">
+            <td><img th:src="@{${'/img/' + sideItem.name + '.png'}}" width="120"/></td>
             <td th:text="${sideItem.name}"></td>
             <td th:text="${sideItem.price}"></td>
             <td>
@@ -293,6 +310,38 @@
         </tbody>
         </tbody>
     </table>
+    <div align="center">
+        <form th:action="@{/orders/add_item/customPizza}" th:method="post" th:object="${newOrder}" style="width: 200px">
+            <input type="hidden" th:field="*{user}"/>
+            <input type="hidden" th:field="*{to_deliver}"/>
+            <input type="hidden" th:field="*{restaurant}"/>
+            <input type="hidden" th:field="*{address}"/>
+            <input type="hidden" th:field="*{pizzas}"/>
+            <input type="hidden" th:field="*{side_items}"/>
+            <input type="hidden" name="orderMap" th:value="${orderMap}"/>
+            <h2>Add Custom Pizza</h2>
+            <br/>
+            <label for="size">Size:</label>
+            <select id="size" name="pizza_size">
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+            </select>
+            <br/>
+            <label for="ingredient">Ingredients:</label>
+            <select id="ingredient" multiple="multiple" name="ingredients">
+                <option th:each="ingredient : ${allIngredients}"
+                        th:if="${ingredient.pizza_size == 'S'}"
+                        th:value="${ingredient.id}" th:text="${ingredient.name}">Select
+                    Ingredients
+                </option>
+            </select>
+            <br/>
+            <input type="hidden" name="orderMap" th:value="${orderMap}"/>
+            <button type="submit">Create</button>
+        </form>
+
+    </div>
     <div>
         <form th:action="@{/orders/create_order_3}" th:method="post" th:object="${newOrder}">
             <input type="hidden" th:field="*{user}"/>

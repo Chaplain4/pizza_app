@@ -52,8 +52,8 @@ public class Order {
     @JoinTable(name = "orders_side_items", joinColumns = { @JoinColumn(name = "order_id") }, inverseJoinColumns = {
             @JoinColumn(name = "side_item_id") })
     private Set<SideItem> side_items;
-    @OneToOne()
-    @JoinColumn(name = "feedback_id")
-    @Nullable
-    private Feedback feedback;
+//    @OneToOne()
+//    @JoinColumn(name = "feedback_id")
+//    @Nullable
+//    private Feedback feedback;
 }

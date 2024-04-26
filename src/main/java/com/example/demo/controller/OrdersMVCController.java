@@ -4,14 +4,11 @@ package com.example.demo.controller;
 import com.example.demo.dto.OrderDTO;
 import com.example.demo.dto.PizzaDTO;
 import com.example.demo.model.*;
-import com.example.demo.repository.PizzaRepository;
-import com.example.demo.repository.SideItemRepository;
 import com.example.demo.service.abs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -19,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Controller
 @RequestMapping("/orders")
@@ -71,7 +69,15 @@ public class OrdersMVCController {
         final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = acs.findUserByEmail(currentUserEmail);
         logger.info("showForm started");
-        model.addAttribute("newOrder", new Order());
+        Order NewOrder = new Order();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("newOrder", NewOrder);
         model.addAttribute("orders", os.getAllOrders());
         model.addAttribute("addresses", as.getAllAddresses());
         model.addAttribute("users", acs.getAllUsers());
@@ -141,13 +147,14 @@ public class OrdersMVCController {
         model.addAttribute("stage", new Integer(2));
         model.addAttribute("orders", os.getAllOrders());
         model.addAttribute("restaurants", rs.getAllRestaurants());
-        if (order.getUser() != null) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user != null) {
+            order.setUser(user);
             Set<Address> addressSet = new HashSet<>();
             for (Address a : as.getAllAddresses()) {
-                for (User u : a.getUsers()) {
-                    if (u.getId().equals(order.getUser().getId())) {
-                        addressSet.add(a);
-                    }
+                if (a.getUsers().contains(user)) {
+                    addressSet.add(a);
                 }
             }
             model.addAttribute("addresses", addressSet);
@@ -188,7 +195,31 @@ public class OrdersMVCController {
                 acs.saveOrUpdateUser(user);
             }
         }
+
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            order.setUser(user);
+        }
+        String customPizzas = new String();
+        for (PizzaDTO pizza : ps.getAllPizzas()) {
+            if (pizza.getName().contains(user.getName()) && os.findOrdersByPizzasId(pizza.getId()).isEmpty()) {
+                customPizzas = customPizzas + pizza.getId() + pizza.getName() + " ";
+            }
+        }
+
+        List<Ingredient> ingredients1 = is.getAllIngredients();
+        List<Ingredient> allIngredients = new ArrayList<>();
+        for (Ingredient i : ingredients1) {
+            if (i.getPizza_size().equals("S") && !i.getName().equals("Thin dough") && !i.getName().equals("Red sauce")) {
+                allIngredients.add(i);
+            }
+        }
+
         String orderMap = "";
+        model.addAttribute("allIngredients", allIngredients);
         model.addAttribute("newOrder", order);
         model.addAttribute("newPizza", new Pizza());
         model.addAttribute("newSideItem", new SideItem());
@@ -197,6 +228,7 @@ public class OrdersMVCController {
         model.addAttribute("addresses", as.getAllAddresses());
         model.addAttribute("users", acs.getAllUsers());
         model.addAttribute("orderMap", orderMap);
+        model.addAttribute("customPizzas", customPizzas);
         List<SideItem> sideItems = sis.getAllSideItems();
         List<SideItem> menuSideItems = new ArrayList<>();
         for (SideItem p : sideItems) {
@@ -213,6 +245,127 @@ public class OrdersMVCController {
             }
         }
         model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("customPizza", new PizzaDTO());
+        return "order_form";
+    }
+
+    @PostMapping("/add_item/customPizza")
+    public String addCustomItem(@ModelAttribute("newOrder") Order order,
+                                @ModelAttribute("orderMap") String orderMap, @ModelAttribute("pizza_size") String pizza_size,
+                                @ModelAttribute("ingredients") Set<Ingredient> ingredients, Model model) {
+        System.out.println("begin posting");
+        PizzaDTO customPizza = new PizzaDTO();
+        customPizza.setPizza_size(pizza_size);
+        customPizza.setIngredients(ingredients);
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order1.getId());
+            pizzasForOrders.put(order1.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order1 : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order1.getId());
+            sideItemsForOrders.put(order1.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            order.setUser(user);
+        }
+        List<Ingredient> all = is.getAllIngredients();
+        Set<Ingredient> Oldingredients = customPizza.getIngredients();
+        Set<Ingredient> newIngredients = new HashSet<>();
+        newIngredients.add(is.getIngredientById(1));
+        newIngredients.add(is.getIngredientById(4));
+        Oldingredients.forEach(ingredient -> {
+            if (ingredient.getPizza_size().equals(customPizza.getPizza_size())) {
+                newIngredients.add(ingredient);
+            } else {
+                all.forEach(ingredient1 -> {
+                    if (ingredient1.getName().equals(ingredient.getName()) && ingredient1.getPizza_size().equals(customPizza.getPizza_size())) {
+                        newIngredients.add(ingredient1);
+                    }
+                });
+            }
+        });
+        customPizza.setIngredients(newIngredients);
+        customPizza.setName("{" + user.getName() + "Custom Pizza}");
+        customPizza.setMenu_item(false);
+        Double price = 0.0;
+        for (Ingredient i : newIngredients) {
+            price += i.getPrice();
+        }
+        customPizza.setPrice(price);
+        PizzaDTO newCustomPizza = ps.createPizza(customPizza);
+        String customPizzas = new String();
+        for (PizzaDTO pizza : ps.getAllPizzas()) {
+            if (pizza.getName().contains(user.getName()) && os.findOrdersByPizzasId(pizza.getId()).isEmpty()) {
+                customPizzas = customPizzas + pizza.getId() + pizza.getName() + " ";
+            }
+        }
+        String newStr = orderMap;
+        HashMap<String, Integer> map = new HashMap<>();
+        String[] pairs = newStr.split("[{},]+");
+        for (int i = 1; i < pairs.length; i += 2) {
+            String key = pairs[i];
+            int value = Integer.parseInt(pairs[i + 1]);
+            map.put(key, value);
+        }
+        String currentItems = "";
+        for (String key : map.keySet()) {
+            int value = map.get(key);
+            for (int i = 0; i < value; i++) {
+                if (key.startsWith("pizza")) {
+                    key = key.replace("pizza", "");
+                    currentItems = currentItems + (ps.getPizzaById(Integer.parseInt(key)).getName() + " " + ps.getPizzaById(Integer.parseInt(key)).getPizza_size() + ", ");
+                    key = "pizza" + key;
+                } else {
+                    key = key.replace("sideItem", "");
+                    currentItems = currentItems + (sis.getSideItemById(Integer.parseInt(key)).getName() + ", ");
+                    key = "sideItem" + key;
+                }
+            }
+        }
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            }
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            }
+        }
+
+        List<Ingredient> ingredients1 = is.getAllIngredients();
+        List<Ingredient> allIngredients = new ArrayList<>();
+        for (Ingredient i : ingredients1) {
+            if (i.getPizza_size().equals("S") && !i.getName().equals("Thin dough") && !i.getName().equals("Red sauce")) {
+                allIngredients.add(i);
+            }
+        }
+        model.addAttribute("newOrder", order);
+        model.addAttribute("stage", new Integer(3));
+        model.addAttribute("orders", os.getAllOrders());
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("orderMap", newStr);
+        model.addAttribute("currentItems", currentItems);
+        model.addAttribute("customPizzas", customPizzas);
+        model.addAttribute("customPizza", new PizzaDTO());
+        model.addAttribute("allIngredients", allIngredients);
         return "order_form";
     }
 
@@ -232,7 +385,7 @@ public class OrdersMVCController {
             sideItemsForOrders.put(order1.getId(), sideItems);
         }
         model.addAttribute("sideItemsForOrders", sideItemsForOrders);
-        String newStr = "";
+        String newStr = orderMap + "{customPizza}";
         String subStrToFind = pizzaOrSideItem + id;
         int startIndex = orderMap.indexOf(subStrToFind);
         if (orderMap.contains(subStrToFind)) {
@@ -287,6 +440,28 @@ public class OrdersMVCController {
                 menuPizzas.add(p);
             }
         }
+
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        String customPizzas = new String();
+        for (PizzaDTO pizza : ps.getAllPizzas()) {
+            if (pizza.getName().contains(user.getName()) && os.findOrdersByPizzasId(pizza.getId()).isEmpty()) {
+                customPizzas = customPizzas + pizza.getId() + pizza.getName() + " ";
+            }
+        }
+
+        List<Ingredient> ingredients1 = is.getAllIngredients();
+        List<Ingredient> allIngredients = new ArrayList<>();
+        for (Ingredient i : ingredients1) {
+            if (i.getPizza_size().equals("S") && !i.getName().equals("Thin dough") && !i.getName().equals("Red sauce")) {
+                allIngredients.add(i);
+            }
+        }
+
         model.addAttribute("newOrder", order);
         model.addAttribute("stage", new Integer(3));
         model.addAttribute("orders", os.getAllOrders());
@@ -295,6 +470,9 @@ public class OrdersMVCController {
         model.addAttribute("Allpizzas", menuPizzas);
         model.addAttribute("orderMap", newStr);
         model.addAttribute("currentItems", currentItems);
+        model.addAttribute("customPizzas", customPizzas);
+        model.addAttribute("customPizza", new PizzaDTO());
+        model.addAttribute("allIngredients", allIngredients);
         return "order_form";
     }
 
@@ -372,6 +550,28 @@ public class OrdersMVCController {
                 menuPizzas.add(p);
             }
         }
+
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        String customPizzas = new String();
+        for (PizzaDTO pizza : ps.getAllPizzas()) {
+            if (pizza.getName().contains(user.getName()) && os.findOrdersByPizzasId(pizza.getId()).isEmpty()) {
+                customPizzas = customPizzas + pizza.getId() + pizza.getName() + " ";
+            }
+        }
+
+        List<Ingredient> ingredients1 = is.getAllIngredients();
+        List<Ingredient> allIngredients = new ArrayList<>();
+        for (Ingredient i : ingredients1) {
+            if (i.getPizza_size().equals("S") && !i.getName().equals("Thin dough") && !i.getName().equals("Red sauce")) {
+                allIngredients.add(i);
+            }
+        }
+
         model.addAttribute("newOrder", order);
         model.addAttribute("stage", new Integer(3));
         model.addAttribute("orders", os.getAllOrders());
@@ -380,15 +580,29 @@ public class OrdersMVCController {
         model.addAttribute("Allpizzas", menuPizzas);
         model.addAttribute("orderMap", newStr);
         model.addAttribute("currentItems", currentItems);
+        model.addAttribute("customPizzas", customPizzas);
+        model.addAttribute("customPizza", new PizzaDTO());
+        model.addAttribute("allIngredients", allIngredients);
         return "order_form";
     }
 
     @Transactional
     @PostMapping("/create_order_3")
     public String addItem(@ModelAttribute("newOrder") Order order, @ModelAttribute("orderMap") String orderMap) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        Boolean isActivated = false;
+        if (user.getIsActivated()) {
+            isActivated = user.getIsActivated();
+        }
         Timestamp tst = new Timestamp((System.currentTimeMillis()));
         Set<Order> orders = new HashSet<>();
         order.setCreated(tst);
+        order.setComment(order.getComment() + " CREATED");
         os.createOrder(os.mapEntityToDto(order));
 
         List<OrderDTO> allOrders = os.getAllOrders();
@@ -409,10 +623,10 @@ public class OrdersMVCController {
             map.put(key, value);
         }
         if (order.getUser() == null) {
-            User user = new User();
             user.setName("Stranger");
             order.setUser(user);
         }
+        Integer bonus = 0;
         List<Pizza> currentPizzas = new ArrayList<>();
         List<SideItem> currentItems = new ArrayList<>();
         for (String key : map.keySet()) {
@@ -422,14 +636,22 @@ public class OrdersMVCController {
                     key = key.replace("pizza", "");
                     Pizza pizza = new Pizza();
                     Pizza oldPizza = ps.getPizzaById(Integer.parseInt(key));
-                    pizza.setIngredients(oldPizza.getIngredients());
                     pizza.setPizza_size(oldPizza.getPizza_size());
                     pizza.setMenu_item(false);
                     pizza.setOrders(orders);
                     pizza.setPrice(oldPizza.getPrice());
+                    bonus += (Integer) (int) (oldPizza.getPrice() / 10);
                     pizza.setId(null);
                     pizza.setName(order.getUser().getName() + (i + 1) + oldPizza.getName());
-                    ps.createPizza(ps.mapEntityToDto(pizza));
+                    PizzaDTO newPizza = ps.createPizza(ps.mapEntityToDto(pizza));
+                    ps.clearIngredients(newPizza.getId());
+                    for (Ingredient ingredient : is.getAllIngredients()) {
+                        if (ingredient.getPizzas() != null) {
+                            if (ingredient.getPizza_size().equals(oldPizza.getPizza_size()) && ingredient.getPizzas().contains(oldPizza)) {
+                                ps.addIngredientToPizza(newPizza.getId(), ingredient.getId());
+                            }
+                        }
+                    }
                     currentPizzas.add(pizza);
                     key = "pizza" + key;
                 } else {
@@ -441,6 +663,7 @@ public class OrdersMVCController {
                     sideItem.setMenu_item(false);
                     sideItem.setId(null);
                     sideItem.setPrice(oldSideItem.getPrice());
+                    bonus += (Integer) (int) (oldSideItem.getPrice() / 10);
                     sis.createSideItem(sideItem);
                     currentItems.add(sideItem);
                     key = "sideItem" + key;
@@ -449,24 +672,58 @@ public class OrdersMVCController {
                 List<PizzaDTO> all1 = ps.getAllPizzas();
                 OrderDTO finalCurrentOrder = currentOrder;
                 if (finalCurrentOrder.getUser() == null) {
-                    User user = new User();
                     user.setName("Stranger");
                     finalCurrentOrder.setUser(user);
                 }
                 all.forEach(sideItem -> {
                     if (sideItem.getName().startsWith(finalCurrentOrder.getUser().getName()) && os.findOrdersBySide_itemsId(sideItem.getId()).isEmpty()) {
                         os.addSideItemToOrder(finalCurrentOrder.getId(), sideItem.getId());
+                        String newName = sideItem.getName().replace(finalCurrentOrder.getUser().getName(), "").replaceAll("\\d", "");
+                        sideItem.setName(newName);
+                        sis.saveOrUpdateSideItem(sideItem);
                     }
                 });
                 all1.forEach(pizzaDTO -> {
                     if (pizzaDTO.getName().startsWith(finalCurrentOrder.getUser().getName()) && os.findOrdersByPizzasId(pizzaDTO.getId()).isEmpty()) {
                         os.addPizzaToOrder(finalCurrentOrder.getId(), pizzaDTO.getId());
+                        String newName = pizzaDTO.getName().replace(finalCurrentOrder.getUser().getName(), "").replaceAll("\\d", "");
+                        pizzaDTO.setName(newName);
+                        ps.saveOrUpdatePizza(pizzaDTO.getId(), pizzaDTO);
                     }
                 });
+                User user1 = finalCurrentOrder.getUser();
             }
+        }
+
+
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            order.setUser(user);
+        }
+
+        for (PizzaDTO pizza : ps.getAllPizzas()) {
+            if (pizza.getName().contains("{" + user.getName() + "Custom Pizza}") && os.findOrdersByPizzasId(pizza.getId()).isEmpty()) {
+                pizza.setName("Custom Pizza");
+                bonus += (Integer) (int) (pizza.getPrice() / 10);
+                os.addPizzaToOrder(currentOrder.getId(), pizza.getId());
+            }
+        }
+        if (user.getBonus_coins() == null) {
+            user.setBonus_coins(0);
+        }
+        if (isActivated && (user.getBonus_coins() < bonus * 10)) {
+            user.setBonus_coins(user.getBonus_coins() + bonus);
+            acs.saveOrUpdateUser(user);
+        } else {
+            user.setBonus_coins(user.getBonus_coins() - bonus * 10);
+            acs.saveOrUpdateUser(user);
+            currentOrder.setComment("BONUS! " + currentOrder.getComment());
+            os.saveOrUpdateOrder(currentOrder.getId(), currentOrder);
         }
         return "request_success";
     }
+
 
     @GetMapping("/delete/{id}")
     public String remove(@PathVariable(name = "id") Integer id) {

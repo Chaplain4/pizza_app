@@ -63,8 +63,9 @@
 
 
 <div align="center">
-    <h2>Create Restaurant</h2>
+
     <form th:action="@{/restaurants/create_restaurant}" th:method="post" th:object="${restaurant}" >
+        <h2>Create Restaurant</h2>
         <label for="openHours">Open Hours:</label>
         <input type="text" id="openHours" th:field="*{open_hours}"/><br/>
 
