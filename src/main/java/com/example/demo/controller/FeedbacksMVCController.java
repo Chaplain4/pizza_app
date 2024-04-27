@@ -34,6 +34,19 @@ public class FeedbacksMVCController {
     @Autowired
     private SideItemService sis;
 
+    @ModelAttribute("currentRoles")
+    public Set<Role> currentRoles() {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            return new HashSet<>();
+        }
+        else return new HashSet<>(acs.findRolesByUserId(user.getId()));
+    }
+
+
     public List<Pizza> getPizzasForOrder(int orderId) {
         Order order = os.getOrderById(orderId);
         if (order != null) {
@@ -55,6 +68,14 @@ public class FeedbacksMVCController {
     @GetMapping("/list")
     public String showForm(Model model) {
         logger.info("showForm started");
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        final User user1 = user;
+        model.addAttribute("currentUser", user);
         Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
         for (OrderDTO order : os.getAllOrders()) {
             List<Pizza> pizzas = getPizzasForOrder(order.getId());
@@ -68,8 +89,6 @@ public class FeedbacksMVCController {
             sideItemsForOrders.put(order.getId(), sideItems);
         }
         model.addAttribute("sideItemsForOrders", sideItemsForOrders);
-        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = acs.findUserByEmail(currentUserEmail);
         List<OrderDTO> orderList = new ArrayList<>();
         List <Feedback> feedbacks = fs.getAllFeedbacks();
         List <Integer> ids = new ArrayList<>();
@@ -79,7 +98,7 @@ public class FeedbacksMVCController {
             }
         });
         os.getAllOrders().forEach(orderDTO -> {
-            if (os.getOrderById(orderDTO.getId()).getUser() != null && os.getOrderById(orderDTO.getId()).getUser().getId().equals(user.getId()) && !ids.contains(orderDTO.getId()) && orderDTO.getDelivered() != null) {
+            if (os.getOrderById(orderDTO.getId()).getUser() != null && os.getOrderById(orderDTO.getId()).getUser().getId().equals(user1.getId()) && !ids.contains(orderDTO.getId()) && orderDTO.getDelivered() != null) {
                 orderList.add(orderDTO);
             }
         });
@@ -93,6 +112,12 @@ public class FeedbacksMVCController {
     public String openEditForm(@PathVariable String orderId, Model model) {
         logger.info("editForm started");
         final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
         Feedback feedback = new Feedback();
         feedback.setUser(acs.findUserByEmail(currentUserEmail));
         feedback.setOrder(os.getOrderById(Integer.parseInt(orderId)));
@@ -122,7 +147,14 @@ public class FeedbacksMVCController {
     }
 
     @GetMapping("/delete/{id}")
-    public String remove(@PathVariable(name = "id") Integer id) {
+    public String remove(@PathVariable(name = "id") Integer id, Model model) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
         System.out.println("begin posting");
         try {
             fs.deleteFeedback(id);
@@ -135,6 +167,13 @@ public class FeedbacksMVCController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(Model model, @PathVariable(name = "id") Integer id) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
         logger.info("showForm started");
         model.addAttribute("feedback", fs.getFeedbackById(id));
         logger.info("feedback added");

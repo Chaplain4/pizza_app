@@ -19,7 +19,7 @@ public class Role {
     private Integer id;
     @Column
     private String name;
-    @ManyToMany(mappedBy = "roles")
-    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.MERGE, CascadeType.PERSIST }, mappedBy = "roles")
     private Set<User> users;
 }

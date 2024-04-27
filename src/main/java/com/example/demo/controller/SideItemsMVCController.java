@@ -1,13 +1,20 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Role;
 import com.example.demo.model.SideItem;
+import com.example.demo.model.User;
 import com.example.demo.service.abs.SideItemService;
+import com.example.demo.service.abs.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/sideitems")
@@ -17,9 +24,30 @@ public class SideItemsMVCController {
     @Autowired
     private SideItemService sis;
 
+    @Autowired
+    UserService acs;
+
+    @ModelAttribute("currentRoles")
+    public Set<Role> currentRoles() {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            return new HashSet<>();
+        } else return new HashSet<>(acs.findRolesByUserId(user.getId()));
+    }
+
     @GetMapping("/list")
     public String showForm(Model model) {
         logger.info("showForm started");
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
         model.addAttribute("sideitems", sis.getAllSideItems());
         model.addAttribute("sideitem", new SideItem());
         logger.info("side items added");
@@ -40,8 +68,15 @@ public class SideItemsMVCController {
     }
 
     @GetMapping("/delete/{id}")
-    public String remove(@PathVariable(name = "id") Integer id) {
+    public String remove(@PathVariable(name = "id") Integer id, Model model) {
         System.out.println("begin posting");
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
         try {
             sis.deleteSideItem(id);
             return "request_success";
@@ -54,6 +89,13 @@ public class SideItemsMVCController {
     @GetMapping("/edit/{id}")
     public String showEditForm(Model model, @PathVariable(name = "id") Integer id) {
         logger.info("showForm started");
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
         model.addAttribute("sideitem", sis.getSideItemById(id));
         logger.info("side item added");
         return "sideitem_editform";

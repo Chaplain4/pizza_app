@@ -2,10 +2,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizza Form</title>
+    <title>Order Form</title>
     <link rel="stylesheet" type="text/css" href="/css/pizza.css">
 </head>
-
+<body>
 <body>
 <header>
     <table style="width: 100%">
@@ -80,21 +80,43 @@
         </tr>
     </table>
 </header>
-
-<div align="center">
-
-    <form th:action="@{/feedbacks/create_feedback}" th:method="post" th:object="${feedback}" style="width: 70%">
-        <h2>Submit feedback</h2>
-        <input type="hidden" th:field="*{id}"/>
-        <input type="hidden" th:field="*{user.id}"/>
-        <input type="hidden" th:field="*{order.id}"/>
-        <h3>Rate your order!</h3>
-        <input type="range" id="score" name="score" min="1" max="5" th:field="*{score}">
-        <h2>Write your comment:</h2>
-        <textarea  type="text" id="comment" style="height: 400px" th:field="*{comment}"></textarea><br/>
-        <button type="submit">Submit</button>
-    </form>
-</div>
-
-</body>
-</html>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Restaurant</th>
+        <th>To deliver?</th>
+        <th>Address</th>
+        <th>Created</th>
+        <th>Confirmed</th>
+        <th>Assembled</th>
+        <th>Delivered</th>
+        <th>Comment</th>
+        <th>Pizzas</th>
+        <th>Side Items</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${orders}">
+        <td th:text="${order.id} ? ${order.id} : ''"></td>
+        <td th:text="${order.user != null} ? ${order.user.name} : ''"></td>
+        <td th:text="${order.restaurant != null} ? ${order.restaurant.id} : ''"></td>
+        <td th:text="${order.to_deliver} ? 'Yes' : 'No'"></td>
+        <td th:text="${order.address != null} ? ${order.address.street + ', ' + order.address.building + '-' + order.address.apartment} : ''"></td>
+        <td th:text="${order.created}"></td>
+        <td th:text="${order.confirmed}"></td>
+        <td th:text="${order.assembled}"></td>
+        <td th:text="${order.delivered}"></td>
+        <td th:text="${order.comment}"></td>
+        <td>
+            <span th:each="pizza : ${pizzasForOrders[__${order.id}__]}"
+                  th:text="${pizza.name + ', ' + pizza.pizza_size}"></span>
+        </td>
+        <td>
+            <span th:each="item : ${sideItemsForOrders[__${order.id}__]}" th:text="${item.name}"></span>
+        </td>
+        </td>
+    </tr>
+    </tbody>
+</table>

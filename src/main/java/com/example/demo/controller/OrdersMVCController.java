@@ -45,6 +45,26 @@ public class OrdersMVCController {
     @Autowired
     private IngredientService is;
 
+    @ModelAttribute("currentRoles")
+    public Set<String> currentRoles() {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            return new HashSet<>();
+        } else
+            return getStringsFromRoles(new HashSet<>(acs.findRolesByUserId(user.getId())));
+    }
+
+    public Set<String> getStringsFromRoles(Set<Role> roles) {
+        Set<String> result = new HashSet<>();
+        roles.forEach(role -> {
+            result.add(role.getName());
+        });
+        return result;
+    }
+
     public List<Pizza> getPizzasForOrder(int orderId) {
         Order order = os.getOrderById(orderId);
         if (order != null) {
@@ -63,6 +83,635 @@ public class OrdersMVCController {
         }
     }
 
+    @GetMapping("/boss")
+    public String boss(Model model) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        List<OrderDTO> allOrders = os.getAllOrders();
+        List<OrderDTO> ordersInProgress = new ArrayList<>();
+        for (OrderDTO o : allOrders) {
+            if (o.getRestaurant() != null) {
+                if (o.getRestaurant().equals(user.getRestaurant())) {
+                    ordersInProgress.add(o);
+                }
+            }
+        }
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", ordersInProgress);
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "boss_form";
+    }
+
+    @GetMapping("/ceo")
+    public String ceoForm(Model model) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", os.getAllOrders());
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "ceo_form";
+    }
+
+    @GetMapping("/waiter")
+    public String waiter(Model model) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        int restId = user.getRestaurant().getId();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        List<OrderDTO> allOrders = os.getAllOrders();
+        List<OrderDTO> ordersInProgress = new ArrayList<>();
+        allOrders.forEach(orderDTO -> {
+            if (orderDTO.getRestaurant()!=null) {
+                if (!orderDTO.getComment().endsWith("CANCELLED") && orderDTO.getAssembled() != null && !orderDTO.getTo_deliver() && orderDTO.getDelivered() == null && orderDTO.getRestaurant().getId().equals(restId)) {
+                    ordersInProgress.add(orderDTO);
+                }
+            }
+        });
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", ordersInProgress);
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "waiter_form";
+    }
+
+
+    @GetMapping("/delivery")
+    public String delivery(Model model) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        List<OrderDTO> allOrders = os.getAllOrders();
+        List<OrderDTO> ordersInProgress = new ArrayList<>();
+        allOrders.forEach(orderDTO -> {
+            if (!orderDTO.getComment().endsWith("CANCELLED") && orderDTO.getAssembled() != null && orderDTO.getTo_deliver() && orderDTO.getDelivered() == null) {
+                ordersInProgress.add(orderDTO);
+            }
+        });
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", ordersInProgress);
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "delivery_form";
+    }
+
+    @GetMapping("/cook")
+    public String cook(Model model) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        int restId = user.getRestaurant().getId();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        List<OrderDTO> allOrders = os.getAllOrders();
+        List<OrderDTO> ordersInProgress = new ArrayList<>();
+        allOrders.forEach(orderDTO -> {
+            if (!orderDTO.getComment().endsWith("CANCELLED") && orderDTO.getAssembled() == null && orderDTO.getConfirmed() != null && (orderDTO.getRestaurant() == null || orderDTO.getRestaurant().getId().equals(restId))) {
+                ordersInProgress.add(orderDTO);
+            }
+        });
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", ordersInProgress);
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "cook_form";
+    }
+
+    @GetMapping("/callOp")
+    public String callOp(Model model) {
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        List<OrderDTO> allOrders = os.getAllOrders();
+        List<OrderDTO> ordersInProgress = new ArrayList<>();
+        allOrders.forEach(orderDTO -> {
+            if (!orderDTO.getComment().endsWith("CANCELLED")) {
+                if (orderDTO.getDelivered() != null || !orderDTO.getComment().endsWith("DELIVERED")) {
+                    ordersInProgress.add(orderDTO);
+                }
+            }
+        });
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", ordersInProgress);
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "callOp_form";
+    }
+
+    @GetMapping("/assemble/{id}")
+    public String assemble(Model model, @PathVariable(name = "id") String id) {
+        Order corder = os.getOrderById(Integer.parseInt(id));
+        corder.setComment(corder.getComment() + " ASSEMBLED");
+        corder.setAssembled(new Timestamp(System.currentTimeMillis()));
+        os.saveOrUpdateOrder(corder.getId(), os.mapEntityToDto(corder));
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        int restId = user.getRestaurant().getId();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        List<OrderDTO> allOrders = os.getAllOrders();
+        List<OrderDTO> ordersInProgress = new ArrayList<>();
+        allOrders.forEach(orderDTO -> {
+            if (!orderDTO.getComment().endsWith("CANCELLED") && orderDTO.getAssembled() == null && orderDTO.getConfirmed() != null && (orderDTO.getRestaurant() == null || orderDTO.getRestaurant().getId().equals(restId))) {
+                ordersInProgress.add(orderDTO);
+            }
+        });
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", ordersInProgress);
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "cook_form";
+    }
+
+    @GetMapping("/cancel/{id}")
+    public String cancel(Model model, @PathVariable(name = "id") String id) {
+        Order corder = os.getOrderById(Integer.parseInt(id));
+        corder.setComment(corder.getComment() + " CANCELLED");
+        os.saveOrUpdateOrder(corder.getId(), os.mapEntityToDto(corder));
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        List<OrderDTO> allOrders = os.getAllOrders();
+        List<OrderDTO> ordersInProgress = new ArrayList<>();
+        allOrders.forEach(orderDTO -> {
+            if (!orderDTO.getComment().endsWith("CANCELLED")) {
+                if (orderDTO.getDelivered() != null || !orderDTO.getComment().endsWith("DELIVERED")) {
+                    ordersInProgress.add(orderDTO);
+                }
+            }
+        });
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", ordersInProgress);
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "callOp_form";
+    }
+
+    @GetMapping("/confirm/{id}")
+    public String confirm(Model model, @PathVariable(name = "id") String id) {
+        Order corder = os.getOrderById(Integer.parseInt(id));
+        corder.setComment(corder.getComment() + " CONFIRMED");
+        corder.setConfirmed(new Timestamp(System.currentTimeMillis()));
+        os.saveOrUpdateOrder(corder.getId(), os.mapEntityToDto(corder));
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        logger.info("showForm started");
+        Order NewOrder = new Order();
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+            NewOrder.setUser(user);
+        } else {
+            NewOrder.setUser(user);
+        }
+        model.addAttribute("currentUser", user);
+        List<OrderDTO> allOrders = os.getAllOrders();
+        List<OrderDTO> ordersInProgress = new ArrayList<>();
+        allOrders.forEach(orderDTO -> {
+            if (!orderDTO.getComment().endsWith("CANCELLED")) {
+                if (orderDTO.getDelivered() != null || !orderDTO.getComment().endsWith("DELIVERED")) {
+                    ordersInProgress.add(orderDTO);
+                }
+            }
+        });
+        model.addAttribute("newOrder", NewOrder);
+        model.addAttribute("orders", ordersInProgress);
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("users", acs.getAllUsers());
+
+        Map<Integer, List<Pizza>> pizzasForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<Pizza> pizzas = getPizzasForOrder(order.getId());
+            pizzasForOrders.put(order.getId(), pizzas);
+        }
+        model.addAttribute("pizzasForOrders", pizzasForOrders);
+
+        Map<Integer, List<SideItem>> sideItemsForOrders = new HashMap<>();
+        for (OrderDTO order : os.getAllOrders()) {
+            List<SideItem> sideItems = getSideItemsForOrder(order.getId());
+            sideItemsForOrders.put(order.getId(), sideItems);
+        }
+        model.addAttribute("sideItemsForOrders", sideItemsForOrders);
+
+
+        List<SideItem> sideItems = sis.getAllSideItems();
+        List<SideItem> menuSideItems = new ArrayList<>();
+        List<SideItem> aSideItems = new ArrayList<>();
+        for (SideItem p : sideItems) {
+            if (p.getMenu_item()) {
+                menuSideItems.add(p);
+            } else aSideItems.add(p);
+        }
+        model.addAttribute("sideitems", menuSideItems);
+        model.addAttribute("stage", new Integer(1));
+        List<PizzaDTO> pizzas = ps.getAllPizzas();
+        List<PizzaDTO> aPizzas = new ArrayList<>();
+        List<PizzaDTO> menuPizzas = new ArrayList<>();
+        for (PizzaDTO p : pizzas) {
+            if (p.getMenu_item()) {
+                menuPizzas.add(p);
+            } else {
+                aPizzas.add(p);
+            }
+        }
+        model.addAttribute("Allpizzas", menuPizzas);
+        model.addAttribute("APizzas", aPizzas);
+        model.addAttribute("ASideItems", aSideItems);
+        logger.info("orders added");
+        return "callOp_form";
+    }
 
     @GetMapping("/list")
     public String showForm(Model model) {
@@ -77,6 +726,7 @@ public class OrdersMVCController {
         } else {
             NewOrder.setUser(user);
         }
+        model.addAttribute("currentUser", user);
         model.addAttribute("newOrder", NewOrder);
         model.addAttribute("orders", os.getAllOrders());
         model.addAttribute("addresses", as.getAllAddresses());
@@ -159,6 +809,7 @@ public class OrdersMVCController {
             }
             model.addAttribute("addresses", addressSet);
         } else model.addAttribute("addresses", new HashSet<>());
+        model.addAttribute("currentUser", user);
         model.addAttribute("users", acs.getAllUsers());
         model.addAttribute("sideitems", sis.getAllSideItems());
         return "order_form";
@@ -203,6 +854,7 @@ public class OrdersMVCController {
             user.setName("Stranger");
             order.setUser(user);
         }
+        model.addAttribute("currentUser", user);
         String customPizzas = new String();
         for (PizzaDTO pizza : ps.getAllPizzas()) {
             if (pizza.getName().contains(user.getName()) && os.findOrdersByPizzasId(pizza.getId()).isEmpty()) {
@@ -277,6 +929,7 @@ public class OrdersMVCController {
             user.setName("Stranger");
             order.setUser(user);
         }
+        model.addAttribute("currentUser", user);
         List<Ingredient> all = is.getAllIngredients();
         Set<Ingredient> Oldingredients = customPizza.getIngredients();
         Set<Ingredient> newIngredients = new HashSet<>();
@@ -447,6 +1100,7 @@ public class OrdersMVCController {
             user = new User();
             user.setName("Stranger");
         }
+        model.addAttribute("currentUser", user);
         String customPizzas = new String();
         for (PizzaDTO pizza : ps.getAllPizzas()) {
             if (pizza.getName().contains(user.getName()) && os.findOrdersByPizzasId(pizza.getId()).isEmpty()) {
@@ -557,6 +1211,7 @@ public class OrdersMVCController {
             user = new User();
             user.setName("Stranger");
         }
+        model.addAttribute("currentUser", user);
         String customPizzas = new String();
         for (PizzaDTO pizza : ps.getAllPizzas()) {
             if (pizza.getName().contains(user.getName()) && os.findOrdersByPizzasId(pizza.getId()).isEmpty()) {
@@ -594,6 +1249,7 @@ public class OrdersMVCController {
         if (user == null) {
             user = new User();
             user.setName("Stranger");
+            user.setIsActivated(false);
         }
         Boolean isActivated = false;
         if (user.getIsActivated()) {

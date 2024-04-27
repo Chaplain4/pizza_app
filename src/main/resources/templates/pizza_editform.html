@@ -2,38 +2,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizza Form</title>
-    <link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Side Item Form</title>
+    <link rel="stylesheet" type="text/css" href="/css/pizza.css">
 </head>
 <body>
 <header>
-    <form action="http://localhost:8088/accounts/list">
-        <input type="submit" value="Go to accounts CRUD"/>
-    </form>
-    <form action="http://localhost:8088/addresses/list">
-        <input type="submit" value="Go to addresses CRUD"/>
-    </form>
-    <form action="http://localhost:8088/feedbacks/list">
-        <input type="submit" value="Go to feedbacks CRUD"/>
-    </form>
-    <form action="http://localhost:8088/ingredients/list">
-        <input type="submit" value="Go to ingredients CRUD"/>
-    </form>
-    <form action="http://localhost:8088/orders/list">
-        <input type="submit" value="Go to orders CRUD"/>
-    </form>
-    <form action="http://localhost:8088/pizzas/list">
-        <input type="submit" value="Go to pizzas CRUD"/>
-    </form>
-    <form action="http://localhost:8088/restaurants/list">
-        <input type="submit" value="Go to restaurants CRUD"/>
-    </form>
-    <form action="http://localhost:8088/roles/list">
-        <input type="submit" value="Go to roles CRUD"/>
-    </form>
-    <form action="http://localhost:8088/sideitems/list">
-        <input type="submit" value="Go to side items CRUD"/>
-    </form>
+    <table style="width: 100%">
+        <tr>
+            <td>
+                <b th:text="${'Welcome back, ' + currentUser.name + '!'}"></b>
+                <form action="http://localhost:8088/logout">
+                    <input type="submit" value="Login/Logout"/>
+                </form>
+                <form action="http://localhost:8088/logout"
+                      th:if="${currentUser.name != 'Stranger' and !currentUser.isActivated}">
+                    <input type="submit" value="Validate account"/>
+                </form>
+            </td>
+            <td>
+                <form action="http://localhost:8088/addresses/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage addresses"/>
+                </form>
+                <form action="http://localhost:8088/feedbacks/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_CLIENT')}">
+                    <input type="submit" value="Write feedback"/>
+                </form>
+                <form action="http://localhost:8088/ingredients/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage ingredients"/>
+                </form>
+                <form action="http://localhost:8088/orders/list">
+                    <input type="submit" value="Place order"/>
+                </form>
+                <form action="http://localhost:8088/pizzas/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage pizzas"/>
+                </form>
+                <form action="http://localhost:8088/restaurants/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage restaurants"/>
+                </form>
+                <form action="http://localhost:8088/roles/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage roles"/>
+                </form>
+                <form action="http://localhost:8088/sideitems/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage side items"/>
+                </form>
+                <form action="http://localhost:8088/orders/ceo"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/boss"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_BOSS')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/waiter"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_WAITER')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/delivery"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_DELIVERYMAN')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/cook"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_COOK')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/callOp"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_CALL_OP')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+            </td>
+        </tr>
+    </table>
 </header>
 <form action="http://localhost:8088/">
     <input type="submit" value="Back to menu"/>

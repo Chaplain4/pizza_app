@@ -1,6 +1,7 @@
 package com.example.demo.service.abs;
 
 import com.example.demo.dto.UserRegistrationDto;
+import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -17,4 +18,6 @@ public interface UserService {
     boolean deleteUser(int id);
 
     User findUserByEmail(String email);
+
+    List<Role> findRolesByUserId(Integer userId);
 }

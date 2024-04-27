@@ -63,10 +63,15 @@ table {
 }
 
 
-th {
+table th {
     background-color: #666;
     color: white;
     font-weight: bold;
+    padding: 10px;
+}
+
+table td {
+    line-height: 1.5;
     padding: 10px;
 }
 

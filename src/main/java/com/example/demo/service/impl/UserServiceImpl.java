@@ -97,4 +97,9 @@ public class UserServiceImpl implements UserService {
     public User findUserByEmail(String email) {
         return ar.findByEmail(email);
     }
+
+    @Override
+    public List<Role> findRolesByUserId(Integer userId) {
+        return ar.findRolesByUserId(userId);
+    }
 }
