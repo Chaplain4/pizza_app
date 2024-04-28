@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Form</title>
+    <title>Account Form</title>
     <link rel="stylesheet" type="text/css" href="/css/pizza.css">
 </head>
 <body>
@@ -88,48 +88,17 @@
         </tr>
     </table>
 </header>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>User</th>
-        <th>Restaurant</th>
-        <th>To deliver?</th>
-        <th>Address</th>
-        <th>Created</th>
-        <th>Confirmed</th>
-        <th>Assembled</th>
-        <th>Delivered</th>
-        <th>Comment</th>
-        <th>Pizzas</th>
-        <th>Side Items</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="order : ${orders}">
-        <td th:text="${order.id} ? ${order.id} : ''"></td>
-        <td th:text="${order.user != null} ? ${order.user.name} : ''"></td>
-        <td th:text="${order.restaurant != null} ? ${order.restaurant.id} : ''"></td>
-        <td th:text="${order.to_deliver} ? 'Yes' : 'No'"></td>
-        <td th:text="${order.address != null} ? ${order.address.street + ', ' + order.address.building + '-' + order.address.apartment} : ''"></td>
-        <td th:text="${order.created}"></td>
-        <td th:text="${order.confirmed}"></td>
-        <td th:text="${order.assembled}"></td>
-        <td th:text="${order.delivered}"></td>
-        <td th:text="${order.comment}"></td>
-        <td>
-            <span th:each="pizza : ${pizzasForOrders[__${order.id}__]}"
-                  th:text="${pizza.name + ', ' + pizza.pizza_size}"></span>
-        </td>
-        <td>
-            <span th:each="item : ${sideItemsForOrders[__${order.id}__]}" th:text="${item.name}"></span>
-        </td>
-        </td>
-        <td>
-            <form th:action="@{'/orders/assemble/' + ${order.id}}" th:method="get">
-                <button type="submit">Assembled</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+
+<form th:action="@{/authenticate}" th:method="post" style="width: 400px">
+    A secret code has been sent to your email!
+    <input type="hidden" name="code" th:value="${code}">
+    <input type="text" id="input" name="input"/>
+    <input type="submit" value="Input"/>
+</form>
+
+
+
+
+</div>
+</body>
+</html>

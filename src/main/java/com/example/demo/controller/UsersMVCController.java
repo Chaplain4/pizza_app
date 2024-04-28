@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Restaurant;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.model.Address;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,11 +48,16 @@ public class UsersMVCController {
     @GetMapping("/list")
     public String showForm(Model model) {
         logger.info("showForm started");
+        Set<User> all = new HashSet<>();
+        for (User u : acs.getAllUsers()) {
+            all.add(acs.getUserById(u.getId()));
+        }
         model.addAttribute("user", new User());
         model.addAttribute("restaurants", rs.getAllRestaurants());
         model.addAttribute("addresses", as.getAllAddresses());
         model.addAttribute("address", new Address());
         model.addAttribute("roles", ros.getAllRoles());
+        model.addAttribute("users", all);
         final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = acs.findUserByEmail(currentUserEmail);
         if (user == null) {
@@ -59,7 +66,104 @@ public class UsersMVCController {
         }
         model.addAttribute("currentUser", user);
         logger.info("users added");
-        return "user_form";
+        return "account_form";
+    }
+
+    @Transactional
+    @GetMapping("/clear/{userid}")
+    public String clearRoles(Model model, @PathVariable(name = "userid") String userId) {
+        logger.info("showForm started");
+        Set<User> all = new HashSet<>();
+        for (User u : acs.getAllUsers()) {
+            all.add(acs.getUserById(u.getId()));
+        }
+        model.addAttribute("restaurants", rs.getAllRestaurants());
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("address", new Address());
+        model.addAttribute("roles", ros.getAllRoles());
+        model.addAttribute("users", all);
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
+        User auser = acs.getUserById(Integer.parseInt(userId));
+        auser.setRestaurant(null);
+        ros.clearRoles(auser.getId());
+        acs.saveOrUpdateUser(auser);
+        model.addAttribute("user", new User());
+        model.addAttribute("restaurants", rs.getAllRestaurants());
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("address", new Address());
+        model.addAttribute("roles", ros.getAllRoles());
+        model.addAttribute("users", acs.getAllUsers());
+        logger.info("users added");
+        return "account_form";
+    }
+
+    @Transactional
+    @GetMapping("/assignrole/{userid}")
+    public String assignRole(Model model, @PathVariable(name = "userid") String userId, @ModelAttribute("roleId") String restaurantId) {
+        logger.info("showForm started");
+        Set<User> all = new HashSet<>();
+        for (User u : acs.getAllUsers()) {
+            all.add(acs.getUserById(u.getId()));
+        }
+        model.addAttribute("restaurants", rs.getAllRestaurants());
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("address", new Address());
+        model.addAttribute("roles", ros.getAllRoles());
+        model.addAttribute("users", all);
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
+        User auser = acs.getUserById(Integer.parseInt(userId));
+        Role r = ros.getRoleById(Integer.parseInt(restaurantId));
+        if (acs.findRolesByUserId(auser.getId()).contains(r)) {
+            return "account_form";
+        } else {
+            ros.addRole(auser.getId(),r.getId());
+        }
+        acs.saveOrUpdateUser(auser);
+        model.addAttribute("user", new User());
+        model.addAttribute("restaurants", rs.getAllRestaurants());
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("address", new Address());
+        model.addAttribute("roles", ros.getAllRoles());
+        model.addAttribute("users", acs.getAllUsers());
+
+        logger.info("users added");
+        return "account_form";
+    }
+
+    @GetMapping("/assign/{userid}")
+    public String assignRestaurant(Model model, @PathVariable(name = "userid") String userId, @ModelAttribute("restaurantId") String restaurantId) {
+        logger.info("showForm started");
+        User auser = acs.getUserById(Integer.parseInt(userId));
+        Restaurant r = rs.getRestaurantById(Integer.parseInt(restaurantId));
+        auser.setRestaurant(r);
+        acs.saveOrUpdateUser(auser);
+        model.addAttribute("user", new User());
+        model.addAttribute("restaurants", rs.getAllRestaurants());
+        model.addAttribute("addresses", as.getAllAddresses());
+        model.addAttribute("address", new Address());
+        model.addAttribute("roles", ros.getAllRoles());
+        model.addAttribute("users", acs.getAllUsers());
+        final String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = acs.findUserByEmail(currentUserEmail);
+        if (user == null) {
+            user = new User();
+            user.setName("Stranger");
+        }
+        model.addAttribute("currentUser", user);
+        logger.info("users added");
+        return "account_form";
     }
 
     @PostMapping("/create_user")
@@ -109,7 +213,7 @@ public class UsersMVCController {
             user.setName("Stranger");
         }
         model.addAttribute("currentUser", user);
-        return "user_editform";
+        return "account_editform";
     }
 
     @PostMapping("/edit")

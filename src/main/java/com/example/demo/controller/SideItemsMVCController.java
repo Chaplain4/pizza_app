@@ -1,10 +1,20 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.PizzaDTO;
 import com.example.demo.model.Role;
 import com.example.demo.model.SideItem;
 import com.example.demo.model.User;
 import com.example.demo.service.abs.SideItemService;
 import com.example.demo.service.abs.UserService;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +23,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -47,8 +60,14 @@ public class SideItemsMVCController {
             user = new User();
             user.setName("Stranger");
         }
+        List<SideItem> sideItems = new ArrayList<>();
+        for (SideItem p : sis.getAllSideItems()) {
+            if (p.getMenu_item()!=null && p.getMenu_item()) {
+                sideItems.add(p);
+            }
+        }
         model.addAttribute("currentUser", user);
-        model.addAttribute("sideitems", sis.getAllSideItems());
+        model.addAttribute("sideitems", sideItems);
         model.addAttribute("sideitem", new SideItem());
         logger.info("side items added");
         return "sideitem_form";

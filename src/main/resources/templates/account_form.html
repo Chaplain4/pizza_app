@@ -2,50 +2,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizza Form</title>
+    <title>Account Form</title>
     <link rel="stylesheet" type="text/css" href="/css/pizza.css">
 </head>
 <body>
 <body>
-<!--@Id-->
-<!--@GeneratedValue(strategy = GenerationType.IDENTITY)-->
-<!--private Integer id;-->
-<!--@Column-->
-<!--private String name;-->
-<!--@Column-->
-<!--private String email;-->
-<!--@Column-->
-<!--private String pwd;-->
-<!--@Column-->
-<!--private String phone;-->
-<!--@Column(columnDefinition = "boolean default false")-->
-<!--private Boolean isActivated;-->
-<!--@Column-->
-<!--private Integer bonus_coins;-->
-<!--@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })-->
-<!--@JoinTable(name = "users_roles", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {-->
-<!--@JoinColumn(name = "role_id") })-->
-<!--private Set<Role> roles;-->
-<!--    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })-->
-<!--    @JoinTable(name = "users_addresses", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {-->
-<!--    @JoinColumn(name = "address_id") })-->
-<!--    private Set<Address> addresses;-->
-<!--        @ManyToOne()-->
-<!--        @JoinColumn(name = "restaurant_id")-->
-<!--        @Nullable-->
-<!--        private Restaurant restaurant;-->
+<header>
+    <table style="width: 100%">
+        <tr>
+            <td>
+                <b th:text="${'Welcome back, ' + currentUser.name + '!'}"></b>
+                <br>
+                <b th:text="${'You have ' + currentUser.bonus_coins + ' bonus coins!'}"
+                   th:if="${currentUser.name != 'Stranger' and currentUser.isActivated}">
+                </b>
+                <form action="http://localhost:8088/logout">
+                    <input type="submit" value="Login/Logout"/>
+                </form>
+                <form action="http://localhost:8088/authenticate"
+                      th:if="${currentUser.name != 'Stranger' and !currentUser.isActivated}">
+                    <input type="submit" value="Validate account"/>
+                </form>
+            </td>
+            <td>
+                <form action="http://localhost:8088/addresses/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage addresses"/>
+                </form>
+                <form action="http://localhost:8088/feedbacks/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_CLIENT')}">
+                    <input type="submit" value="Write feedback"/>
+                </form>
+                <form action="http://localhost:8088/ingredients/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage ingredients"/>
+                </form>
+                <form action="http://localhost:8088/orders/list">
+                    <input type="submit" value="Place order"/>
+                </form>
+                <form action="http://localhost:8088/pizzas/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage pizzas"/>
+                </form>
+                <form action="http://localhost:8088/restaurants/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage restaurants"/>
+                </form>
+                <form action="http://localhost:8088/roles/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage roles"/>
+                </form>
+                <form action="http://localhost:8088/users/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage users"/>
+                </form>
+                <form action="http://localhost:8088/sideitems/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage side items"/>
+                </form>
+                <form action="http://localhost:8088/orders/ceo"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/boss"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_BOSS')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/waiter"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_WAITER')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/delivery"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_DELIVERYMAN')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/cook"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_COOK')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+                <form action="http://localhost:8088/orders/callOp"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_CALL_OP')} or ${#strings.contains(currentRoles, 'ROLE_ADMIN')}">
+                    <input type="submit" value="View orders"/>
+                </form>
+            </td>
+        </tr>
+    </table>
+</header>
 <table>
     <thead>
     <tr>
         <th>ID</th>
         <th>Name</th>
         <th>Email</th>
-        <th>Password</th>
         <th>Phone</th>
         <th>Activated?</th>
         <th>Bonus Coins</th>
         <th>Roles</th>
-        <th>Addresses</th>
         <th>Restaurant</th>
     </tr>
     </thead>
@@ -54,7 +106,6 @@
         <td th:text="${user.id}"></td>
         <td th:text="${user.name}"></td>
         <td th:text="${user.email}"></td>
-        <td th:text="${user.pwd}"></td>
         <td th:text="${user.phone}"></td>
         <td th:text="${user.isActivated} ? 'Yes' : 'No'"></td>
         <td th:text="${user.bonus_coins}"></td>
@@ -63,67 +114,33 @@
     <span th:each="user1 : ${role.users}" th:if="${user1.id == user.id}"
           th:text="${role.name}">></span>
 </span>
-            </span>
-        </td>
+            </td>
         <td>
-            <span th:each="address : ${addresses}" th:if="${address.users != null}">
-    <span th:each="user1 : ${address.users}" th:if="${user1.id == user.id}"
-          th:text="${address.street  + ' street, ' + address.building}">></span>
-</span>
-            </span>
-        </td>
-        <td th:text="${user.restaurant.address.street  + ' street, ' + user.restaurant.address.building}"></td>
-        <td>
-            <form th:action="@{'/users/edit/' + ${user.id}}" th:method="get">
-                <button type="submit">Edit</button>
+            <span th:if="${user.restaurant != null}" th:text="${user.restaurant.address.street + ' street, ' + user.restaurant.address.building}"></span>
+            <form th:if="${user.restaurant == null}" th:action="@{'/users/assign/' + ${user.id}}" method="get">
+                <select name="restaurantId">
+                    <option th:each="restaurant : ${restaurants}" th:value="${restaurant.id}" th:text="${restaurant.address.street + ' street, ' + restaurant.address.building}">Restaurant Address</option>
+                </select>
+                <button type="submit">Assign</button>
             </form>
         </td>
         <td>
-            <form th:action="@{'/users/delete/' + ${user.id}}" th:method="get">
-                <button type="submit">Delete</button>
+            <form th:action="@{'/users/assignrole/' + ${user.id}}" method="get">
+                <select name="roleId">
+                    <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}">Role name</option>
+                </select>
+                <button type="submit">Assign</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{'/users/clear/' + ${user.id}}" th:method="get">
+                <button type="submit">Clear roles</button>
             </form>
         </td>
     </tr>
     </tbody>
 </table>
 </body>
-<form action="http://localhost:8088/">
-    <input type="submit" value="Back to menu"/>
-</form>
-
-
-<div align="center">
-    <h2>Create user</h2>
-    <form th:action="@{/users/create_user}" th:method="post" th:object="${user}">
-
-<!--        <label for="name">Name:</label>-->
-<!--        <input type="text" id="name" th:field="*{name}"/>-->
-<!--        <br/>-->
-<!--        <label for="size">Size:</label>-->
-<!--        <select id="size" th:field="*{pizza_size}">-->
-<!--            <option value="S">S</option>-->
-<!--            <option value="M">M</option>-->
-<!--            <option value="L">L</option>-->
-<!--        </select>-->
-<!--        <br/>-->
-<!--        <label for="price">Price:</label>-->
-<!--        <input type="text" id="price" th:field="*{price}"/>-->
-<!--        <br/>-->
-<!--        <label for="menuItem">Menu Item:</label>-->
-<!--        <input type="checkbox" id="menuItem" th:field="*{menu_item}"/>-->
-<!--        <br/>-->
-<!--        <label for="ingredient">Ingredients:</label>-->
-<!--        <select id="ingredient" multiple="multiple" th:field="*{ingredients}">-->
-<!--            <option th:each="ingredient : ${allIngredients}"-->
-<!--                    th:if="${ingredient.pizza_size == 'S'}"-->
-<!--                    th:value="${ingredient.id}" th:text="${ingredient.name}">Select-->
-<!--                Ingredients-->
-<!--            </option>-->
-<!--        </select>-->
-<!--        <br/>-->
-
-        <button type="submit">Create</button>
-    </form>
 
 </div>
 </body>

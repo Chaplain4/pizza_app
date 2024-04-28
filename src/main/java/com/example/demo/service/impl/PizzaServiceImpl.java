@@ -160,6 +160,15 @@ public class PizzaServiceImpl implements PizzaService {
     }
 
     @Override
+    public void addIngredientsToPizza(Integer pizzaId, Set<Integer> ingredientId) {
+        List<Integer> pizzaIDs = new ArrayList<>(ingredientId.size());
+        for (int i = ingredientId.size(); i>0; i--) {
+            pizzaIDs.add(pizzaId);
+        }
+        pr.addIngredients(pizzaIDs,ingredientId);
+    }
+
+    @Override
     public void clearIngredients(Integer pizzaId) {
         pr.clearIngredients(pizzaId);
     }

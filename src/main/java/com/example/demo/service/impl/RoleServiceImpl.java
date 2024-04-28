@@ -44,6 +44,7 @@ public class RoleServiceImpl implements RoleService {
             return false;
         }
     }
+
     @Override
     public boolean deleteRole(int id) {
         try {
@@ -53,5 +54,15 @@ public class RoleServiceImpl implements RoleService {
             t.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public void addRole(Integer userId, Integer roleId) {
+        rr.addRole(userId, roleId);
+    }
+
+    @Override
+    public void clearRoles(Integer userId) {
+        rr.clearRoles(userId);
     }
 }

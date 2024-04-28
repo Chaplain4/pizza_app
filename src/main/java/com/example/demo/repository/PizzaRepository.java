@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface PizzaRepository extends JpaRepository<Pizza, Integer> {
@@ -16,6 +17,9 @@ public interface PizzaRepository extends JpaRepository<Pizza, Integer> {
     @Modifying
     @Query(value = "INSERT INTO pizzas_ingredients (pizza_id, ingredient_id) VALUES (:pizzaId, :ingredientId)", nativeQuery = true)
     void addIngredient(@Param("pizzaId") Integer pizzaId, @Param("ingredientId") Integer ingredientId);
+    @Modifying
+    @Query(value = "INSERT INTO pizzas_ingredients (pizza_id, ingredient_id) VALUES (:pizzaId, :ingredientIds)", nativeQuery = true)
+    void addIngredients(@Param("pizzaId") List<Integer> pizzaId, @Param("ingredientIds") Set<Integer> ingredientIds);
 
     @Modifying
     @Query(value = "DELETE FROM pizzas_ingredients WHERE  (pizza_id = :pizzaId)", nativeQuery = true)

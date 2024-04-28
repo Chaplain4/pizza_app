@@ -38,6 +38,10 @@
         <tr>
             <td>
                 <b th:text="${'Welcome back, ' + currentUser.name + '!'}"></b>
+                <br>
+                <b th:text="${'You have ' + currentUser.bonus_coins + ' bonus coins!'}"
+                   th:if="${currentUser.name != 'Stranger' and currentUser.isActivated}">
+                </b>
                 <form action="http://localhost:8088/logout">
                     <input type="submit" value="Login/Logout"/>
                 </form>

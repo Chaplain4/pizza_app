@@ -10,6 +10,11 @@ import com.example.demo.service.abs.IngredientService;
 import com.example.demo.service.abs.PizzaService;
 import com.example.demo.service.abs.UserService;
 import com.example.demo.service.impl.CustomUserDetailsService;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 
 @Controller
@@ -59,8 +65,13 @@ public class PizzasMVCController {
             user.setName("Stranger");
         }
         model.addAttribute("currentUser", user);
-        List<PizzaDTO> pizzas = ps.getAllPizzas();
-        model.addAttribute("pizzas", ps.getAllPizzas());
+        List<PizzaDTO> pizzas = new ArrayList<>();
+        for (PizzaDTO p : ps.getAllPizzas()) {
+            if (p.getMenu_item()!=null && p.getMenu_item()) {
+                pizzas.add(p);
+            }
+        }
+        model.addAttribute("pizzas", pizzas);
         model.addAttribute("allIngredients", is.getAllIngredients());
         model.addAttribute("pizza", new Pizza());
         logger.info("pizzas added");
@@ -107,6 +118,38 @@ public class PizzasMVCController {
             e.printStackTrace();
         }
         return "request_fail";
+    }
+
+    @GetMapping("/rivals")
+    public String showRivals(Model model) {
+        String html = "";
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet("https://www.dominos.by/ru/minsk/product/mgrc/"); // Ваш URL
+
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                html = EntityUtils.toString(response.getEntity());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String dominosMargharita = html.substring(html.indexOf("\\u0022price\\u0022: ")+19);
+        dominosMargharita = dominosMargharita.replaceAll(",.+","");
+        dominosMargharita = dominosMargharita.substring(0,dominosMargharita.indexOf('\n'));
+        model.addAttribute("dominosM", dominosMargharita);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet("https://www.dominos.by/ru/minsk/product/tp/"); // Ваш URL
+
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                html = EntityUtils.toString(response.getEntity());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String dominosPepperoni = html.substring(html.indexOf("\\u0022price\\u0022: ")+19);
+        dominosPepperoni = dominosPepperoni.replaceAll(",.+","");
+        dominosPepperoni = dominosPepperoni.substring(0,dominosPepperoni.indexOf('\n'));
+        model.addAttribute("dominosP", dominosPepperoni);
+        return "rivals";
     }
 
     @GetMapping("/edit/{id}")

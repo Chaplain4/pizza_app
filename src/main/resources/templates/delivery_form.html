@@ -12,10 +12,14 @@
         <tr>
             <td>
                 <b th:text="${'Welcome back, ' + currentUser.name + '!'}"></b>
+                <br>
+                <b th:text="${'You have ' + currentUser.bonus_coins + ' bonus coins!'}"
+                   th:if="${currentUser.name != 'Stranger' and currentUser.isActivated}">
+                </b>
                 <form action="http://localhost:8088/logout">
                     <input type="submit" value="Login/Logout"/>
                 </form>
-                <form action="http://localhost:8088/logout"
+                <form action="http://localhost:8088/authenticate"
                       th:if="${currentUser.name != 'Stranger' and !currentUser.isActivated}">
                     <input type="submit" value="Validate account"/>
                 </form>
@@ -47,6 +51,10 @@
                 <form action="http://localhost:8088/roles/list"
                       th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
                     <input type="submit" value="Manage roles"/>
+                </form>
+                <form action="http://localhost:8088/users/list"
+                      th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
+                    <input type="submit" value="Manage users"/>
                 </form>
                 <form action="http://localhost:8088/sideitems/list"
                       th:if="${#strings.contains(currentRoles, 'ROLE_ADMIN')} or ${#strings.contains(currentRoles, 'ROLE_CEO')}">
@@ -125,3 +133,9 @@
     </tr>
     </tbody>
 </table>
+<table style="alignment: center">
+    <td th:each="map : ${maps}">
+        <img th:src="${map}" alt="Map with Marker"/>
+</table>
+
+
